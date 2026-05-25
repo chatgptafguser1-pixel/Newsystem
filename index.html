@@ -440,22 +440,22 @@ function OLApp({ currentUser }) {
   const [toast, setToast] = React.useState(null);
   const [sync, setSync] = React.useState("idle");
   const syncTimer = React.useRef(null);
+  const lastSaved = React.useRef("{}");
   const lastUpdatedAt = React.useRef(null);
-  const pendingSave = React.useRef(false);
   React.useEffect(() => {
     const local = loadLocal();
     if (local && Object.keys(local).length > 0) {
-      const { presence: _p, ...localClean } = local;
-      setState((prev) => __spreadValues(__spreadValues(__spreadValues({}, DEFAULT), prev), localClean));
+      setState((prev) => __spreadValues(__spreadValues({}, prev), local));
+      lastSaved.current = JSON.stringify(local);
       setLoading(false);
     }
     loadRemote().then(({ data, updated_at }) => {
       if (data && Object.keys(data).length > 0) {
-        const { presence: _p, ...dataClean } = data;
-        setState((prev) => __spreadValues(__spreadValues(__spreadValues({}, DEFAULT), prev), dataClean));
+        setState((prev) => __spreadValues(__spreadValues({}, prev), data));
+        lastSaved.current = JSON.stringify(data);
         lastUpdatedAt.current = updated_at;
         try {
-          localStorage.setItem(OL_LS_KEY, JSON.stringify(dataClean));
+          localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
         } catch (e) {
         }
       }
@@ -464,15 +464,14 @@ function OLApp({ currentUser }) {
   }, []);
   React.useEffect(() => {
     const poll = setInterval(async () => {
-      if (pendingSave.current) return;
       try {
         const { data, updated_at } = await loadRemote();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
-          const { presence: _p, ...dataClean } = data;
-          setState((prev) => __spreadValues(__spreadValues({}, prev), dataClean));
+          setState((prev) => __spreadValues(__spreadValues({}, prev), data));
+          lastSaved.current = JSON.stringify(data);
           try {
-            localStorage.setItem(OL_LS_KEY, JSON.stringify(dataClean));
+            localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
           } catch (e) {
           }
           setSync("synced");
@@ -488,7 +487,7 @@ function OLApp({ currentUser }) {
   React.useEffect(() => {
     if (!currentUser) return;
     const writePresence = () => {
-      setState((s) => {
+      update((s) => {
         const presence = __spreadValues({}, s.presence || {});
         presence[currentUser] = new Date().toISOString();
         return __spreadProps(__spreadValues({}, s), { presence });
@@ -509,18 +508,18 @@ function OLApp({ currentUser }) {
     }
     setOnlineUsers(online);
   }, [state.presence, currentUser]);
-  const persist = React.useCallback((ns) => {
-    const { presence: _p, ...nsClean } = ns;
-    pendingSave.current = true;
+  const persist = React.useCallback((newState) => {
+    const json = JSON.stringify(newState);
+    if (json === lastSaved.current) return;
     setSync("syncing");
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
-      const ts = await saveRemote(nsClean);
+      const ts = await saveRemote(newState);
+      lastSaved.current = json;
       if (ts) lastUpdatedAt.current = ts;
-      pendingSave.current = false;
       setSync("synced");
       setTimeout(() => setSync("idle"), 2e3);
-    }, 1000);
+    }, 600);
   }, []);
   const update = React.useCallback((fn) => {
     setState((prev) => {
