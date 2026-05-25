@@ -133,6 +133,8 @@ const toAFN = (amount, currencyId) => {
 };
 const OL_LS_KEY = "ourlife_data";
 const OL_WORKER = "https://limahworker-c366.m-mahdi-mesbah2018.workers.dev?id=ourlife";
+const OL_SB_URL = "https://pcwhdwitoduzqeenydqo.supabase.co";
+const OL_SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjd2hkd2l0b2R1enFlZW55ZHFvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzMwNTYsImV4cCI6MjA5NTA0OTA1Nn0.Ys9bYTW7ukfvgyKXmv2q46m0l8xvk2cpmuZMQ0g1wPs";
 const ARRAY_KEYS = ["budgetHistory","bills","installments","insurance","groceries","other","incomes","savings","savingGoals","debts"];
 function mergeStates(local, remote) {
   if (!local || Object.keys(local).length === 0) return remote;
@@ -153,32 +155,41 @@ function mergeStates(local, remote) {
   merged.totalBudget = Math.max(local.totalBudget || 0, remote.totalBudget || 0);
   return merged;
 }
+const OL_SB_HEADERS = {
+  "Content-Type": "application/json",
+  "apikey": OL_SB_KEY,
+  "Authorization": "Bearer " + OL_SB_KEY,
+  "Prefer": "return=representation"
+};
 const loadRemote = async () => {
   try {
-    const res = await fetch(OL_WORKER);
+    const res = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=key,value,updated_at", {
+      headers: OL_SB_HEADERS
+    });
     const rows = await res.json();
-    if (rows && rows[0]) return { data: rows[0].data || {}, updated_at: rows[0].updated_at };
-  } catch (e) {
-  }
+    if (rows && rows[0] && rows[0].value) {
+      const data = typeof rows[0].value === "string" ? JSON.parse(rows[0].value) : rows[0].value;
+      return { data, updated_at: rows[0].updated_at };
+    }
+  } catch (e) {}
   return { data: {}, updated_at: null };
 };
 const saveRemote = async (data) => {
+  try { localStorage.setItem(OL_LS_KEY, JSON.stringify(data)); } catch(e) {}
   try {
-    localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
-  } catch (e) {
-  }
-  try {
-    await fetch(OL_WORKER, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ data, updated_at: new Date().toISOString() })
+    const value = JSON.stringify(data);
+    const ts = new Date().toISOString();
+    // upsert
+    await fetch(OL_SB_URL + "/rest/v1/kv_store?on_conflict=key", {
+      method: "POST",
+      headers: { ...OL_SB_HEADERS, "Prefer": "resolution=merge-duplicates,return=representation" },
+      body: JSON.stringify({ key: "ourlife", value, updated_at: ts })
     });
-    // GET the real server timestamp so polling won't think it's a new change
-    const res2 = await fetch(OL_WORKER);
+    // get real server updated_at
+    const res2 = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=updated_at", { headers: OL_SB_HEADERS });
     const rows2 = await res2.json();
-    if (rows2 && rows2[0] && rows2[0].updated_at) return rows2[0].updated_at;
-  } catch (e) {
-  }
+    if (rows2 && rows2[0]) return rows2[0].updated_at;
+  } catch(e) {}
   return null;
 };
 const loadLocal = () => {
@@ -595,7 +606,7 @@ function OLApp({ currentUser }) {
   const forceSync = async () => {
     setDebugInfo("در حال دریافت...");
     try {
-      const rawRes = await fetch("https://limahworker-c366.m-mahdi-mesbah2018.workers.dev?id=ourlife");
+      const rawRes = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=key,value,updated_at", { headers: OL_SB_HEADERS });
       const rawText = await rawRes.text();
       setDebugInfo("RAW: " + rawText.slice(0, 300));
       let parsed;
@@ -605,13 +616,14 @@ function OLApp({ currentUser }) {
       }
       const rows = Array.isArray(parsed) ? parsed : [parsed];
       const row = rows[0];
-      if (!row || !row.data || Object.keys(row.data).length === 0) {
-        setDebugInfo("داده خالی. raw: " + rawText.slice(0, 200));
+      if (!row || !row.value) {
+        setDebugInfo("داده خالی یا table وجود نداره. raw: " + rawText.slice(0, 300));
         showToast("⚠️ داده‌ای از سرور نیامد", false);
         return;
       }
+      const rowData = typeof row.value === "string" ? JSON.parse(row.value) : row.value;
       setState((prev) => {
-        const merged = mergeStates(prev, row.data);
+        const merged = mergeStates(prev, rowData);
         lastSaved.current = JSON.stringify(merged);
         try { localStorage.setItem(OL_LS_KEY, JSON.stringify(merged)); } catch(e) {}
         setDebugInfo("OK | updated_at: " + row.updated_at + " | budgetHistory: " + (merged.budgetHistory||[]).length + " | bills: " + (merged.bills||[]).length);
