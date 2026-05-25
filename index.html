@@ -11,7 +11,7 @@
   <div id="root"></div>
   <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin onerror="this.onerror=null;this.src='https://unpkg.com/react@18/umd/react.production.min.js'"></script>
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin onerror="this.onerror=null;this.src='https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'"></script>
-  <script>window.__loadTimeout=setTimeout(function(){var root=document.getElementById('root');var splash=document.getElementById('splash');if(root&&root.children.length===0){if(splash)splash.style.display='none';root.innerHTML='<div dir="rtl" style="min-height:100vh;background:#0a0f1a;display:flex;align-items:center;justify-content:center;font-family:Tahoma,sans-serif;padding:20px"><div style="background:#111827;border:1px solid #f8717144;border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-weight:700;font-size:18px;margin-bottom:12px">اپ لود نشد</div><div style="color:#94a3b8;font-size:13px;line-height:1.8;margin-bottom:20px">۱. اینترنت رو چک کنید<br>۲. رفرش کنید<br>۳. از VPN استفاده کنید</div><button onclick=\'location.reload()\' style=\'background:#4fc3f7;border:none;color:#0a0f1a;border-radius:10px;padding:12px 28px;cursor:pointer;font-weight:700;font-size:15px\'>🔄 رفرش</button></div></div>';}},30000);</script>
+  <script>window.__loadTimeout=setTimeout(function(){var root=document.getElementById('root');var splash=document.getElementById('splash');if(root&&root.children.length===0){if(splash)splash.style.display='none';root.innerHTML='<div dir="rtl" style="min-height:100vh;background:#0a0f1a;display:flex;align-items:center;justify-content:center;font-family:Tahoma,sans-serif;padding:20px"><div style="background:#111827;border:1px solid #f8717144;border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-weight:700;font-size:18px;margin-bottom:12px">اپ لود نشد</div><div style="color:#94a3b8;font-size:13px;line-height:1.8;margin-bottom:20px">۱. اینترنت رو چک کنید<br>۲. رفرش کنید<br>۳. از VPN استفاده کنید</div><button onclick="location.reload()" style="background:#4fc3f7;border:none;color:#0a0f1a;border-radius:10px;padding:12px 28px;cursor:pointer;font-weight:700;font-size:15px">🔄 رفرش</button></div></div>';}},30000);</script>
   <script>
 var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
@@ -560,9 +560,10 @@ function OLApp({ currentUser }) {
         setTimeout(() => setSync("idle"), 2e3);
       } catch (e) {
         setSync("error");
+        setTimeout(() => setSync("idle"), 4000);
       }
-    }, 800);
-  }, []);
+    }, 1000);
+  }, [state, currentUser]);
   const update = React.useCallback((fn) => {
     setState((prev) => {
       const next = typeof fn === "function" ? fn(prev) : __spreadValues(__spreadValues({}, prev), fn);
@@ -637,29 +638,32 @@ function OLApp({ currentUser }) {
     closeModal();
   };
   const delItem = (key, id) => update((s) => __spreadProps(__spreadValues({}, s), { [key]: (s[key] || []).filter((i) => i.id !== id) }));
-  return /* @__PURE__ */ React.createElement("div", { dir: olDir, style: { minHeight: "100vh", background: DARK.bg, color: DARK.text, paddingBottom: 80, fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.card, borderBottom: `1px solid ${DARK.border}`, padding: "12px 16px", display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, zIndex: 100 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => {
-    if (modal) {
-      closeModal();
-      return;
-    }
-    if (tab !== "dashboard") {
-      setTab("dashboard");
-      return;
-    }
-    if (window.__goBackToShell) window.__goBackToShell();
-  }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? "\u{1F3E0} Our Life" : "\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
-      currentUser && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#64748b", display: "flex", alignItems: "center", gap: 4 } },
-        /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#34d399", display: "inline-block" } }),
-        currentUser
-      ),
-      Object.keys(onlineUsers).length > 0 && Object.keys(onlineUsers).map((user) =>
-        /* @__PURE__ */ React.createElement("span", { key: user, style: { display: "flex", alignItems: "center", gap: 4, background: "#4fc3f722", border: "1px solid #4fc3f744", borderRadius: 20, padding: "2px 10px", fontSize: 11, color: "#4fc3f7", fontWeight: 700 } },
-          /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#4fc3f7", display: "inline-block" } }),
-          user, " \u{1F44B}"
-        )
-      ),
-      /* @__PURE__ */ React.createElement(SyncDot, { status: sync }))), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
-    Object.keys(onlineUsers).length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
+  return /* @__PURE__ */ React.createElement("div", { dir: olDir, style: { minHeight: "100vh", background: DARK.bg, color: DARK.text, paddingBottom: 80, fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.card, borderBottom: `1px solid ${DARK.border}`, padding: "10px 16px", position: "sticky", top: 0, zIndex: 100 } },
+  /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
+      /* @__PURE__ */ React.createElement("button", { onClick: () => {
+        if (modal) { closeModal(); return; }
+        if (tab !== "dashboard") { setTab("dashboard"); return; }
+        if (window.__goBackToShell) window.__goBackToShell();
+      }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"),
+      /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? "\u{1F3E0} Our Life" : "\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")
+    ),
+    /* @__PURE__ */ React.createElement(SyncDot, { status: sync })
+  ),
+  /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", marginTop: 6, flexWrap: "wrap" } },
+    currentUser && /* @__PURE__ */ React.createElement("span", { style: { display: "flex", alignItems: "center", gap: 5, background: "#34d39922", border: "1px solid #34d39966", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#34d399", fontWeight: 700 } },
+      /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#34d399", display: "inline-block" } }),
+      currentUser
+    ),
+    Boolean(Object.keys(onlineUsers).length) && Object.keys(onlineUsers).map((user) =>
+      /* @__PURE__ */ React.createElement("span", { key: user, style: { display: "flex", alignItems: "center", gap: 4, background: "#4fc3f722", border: "1px solid #4fc3f744", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#4fc3f7", fontWeight: 700 } },
+        /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#4fc3f7", display: "inline-block" } }),
+        user, " \u{1F44B}"
+      )
+    )
+  )
+), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
+    Boolean(Object.keys(onlineUsers).length) && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
       /* @__PURE__ */ React.createElement("span", { style: { fontSize: 22 } }, "\u{1F91D}"),
       /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } },
         /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "Both of you are online!" : "\u0647\u0631 \u062F\u0648\u062A\u0627\u0646 \u0622\u0646\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F! \u{1F4F1}"),
@@ -1122,7 +1126,10 @@ const saveData = async (data) => {
     localStorage.setItem("bazaarbook_data", JSON.stringify(data));
   } catch (e) {
   }
-  await bbSbFetch("PATCH", { data, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+  try {
+    await bbSbFetch("PATCH", { data, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+  } catch (e) {
+  }
 };
 const loadLocalData = () => {
   try {
@@ -2018,14 +2025,10 @@ function BBApp({ currentUser }) {
     setSyncStatus("syncing");
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
-      try {
-        await saveData(newState);
-        lastSaved.current = json;
-        setSyncStatus("synced");
-        setTimeout(() => setSyncStatus("idle"), 2e3);
-      } catch (e) {
-        setSyncStatus("error");
-      }
+      await saveData(newState);
+      lastSaved.current = json;
+      setSyncStatus("synced");
+      setTimeout(() => setSyncStatus("idle"), 2e3);
     }, 600);
   }, []);
   const update = React.useCallback((fn) => {
@@ -2200,7 +2203,7 @@ function BBApp({ currentUser }) {
       return;
     }
     if (window.__goBackToShell) window.__goBackToShell();
-  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }), currentUser && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#64748b", marginRight: 4 } }, "\u{1F464} ", currentUser))), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
+  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }), currentUser && /* @__PURE__ */ React.createElement("span", { style: { display: "flex", alignItems: "center", gap: 5, background: "#f0a50022", border: "1px solid #f0a50066", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#f0a500", fontWeight: 700 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#f0a500", display: "inline-block" } }), currentUser))), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: i,
@@ -2221,7 +2224,16 @@ function BBApp({ currentUser }) {
   ))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 8 } }, [
     { label: t.totalBudget, val: totalBudget, color: "#f0a500", icon: "\u{1F4B0}" },
     { label: t.remaining, val: remaining, color: remaining >= 0 ? "#2ea043" : "#c0392b", icon: remaining >= 0 ? "\u2705" : "\u26A0\uFE0F" }
-  ].map((c) => /* @__PURE__ */ React.createElement("div", { key: c.label, style: { background: cardBg, border: `1px solid ${c.color}33`, borderRadius: 12, padding: "14px 10px", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, c.icon), /* @__PURE__ */ React.createElement("div", { style: { color: c.color, fontWeight: 700, fontSize: 14 } }, fmt(c.val), " ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10 } }, t.afghani)), /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 10, marginTop: 2 } }, c.label)))), /* @__PURE__ */ React.createElement("div", { style: { background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 12, padding: "12px 14px", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 12, marginBottom: 10 } }, "\u{1F4C5} ", filterMonth === "all" ? lang === "fa" ? "\u0647\u0645\u0647 \u0645\u0627\u0647\u200C\u0647\u0627" : "All Time" : shamsiMonths[filterMonth]), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 } }, [
+  ].map((c) => /* @__PURE__ */ React.createElement("div", { key: c.label, style: { background: cardBg, border: `1px solid ${c.color}33`, borderRadius: 12, padding: "14px 10px", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, c.icon), /* @__PURE__ */ React.createElement("div", { style: { color: c.color, fontWeight: 700, fontSize: 14 } }, fmt(c.val), " ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10 } }, t.afghani)), /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 10, marginTop: 2 } }, c.label)))),
+  /* @__PURE__ */ React.createElement("div", { style: { background: cardBg, border: "1px solid #2ea04333", borderRadius: 12, padding: "14px 10px", textAlign: "center", marginBottom: 8 } },
+    /* @__PURE__ */ React.createElement("div", { style: { fontSize: 20, marginBottom: 4 } }, "\u{1F4B9}"),
+    /* @__PURE__ */ React.createElement("div", { style: { color: "#2ea043", fontWeight: 700, fontSize: 18 } }, fmt(monthIncome + monthServicesProfit), " ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10 } }, t.afghani)),
+    /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 10, marginTop: 2 } }, lang === "fa" ? "\u062F\u0631\u0622\u0645\u062F \u0645\u0627\u0647 (\u0633\u0631\u0648\u06CC\u0633 + \u062B\u0628\u062A \u062F\u0631\u0622\u0645\u062F)" : "Monthly Earnings (Services + Income)"),
+    /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "center", gap: 14, marginTop: 6 } },
+      /* @__PURE__ */ React.createElement("span", { style: { color: "#b06ed4", fontSize: 10 } }, "\u{1F485} ", fmt(monthServicesProfit)),
+      /* @__PURE__ */ React.createElement("span", { style: { color: "#58a6ff", fontSize: 10 } }, "\u{1F4C8} ", fmt(monthIncome))
+    )
+  ), /* @__PURE__ */ React.createElement("div", { style: { background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 12, padding: "12px 14px", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 12, marginBottom: 10 } }, "\u{1F4C5} ", filterMonth === "all" ? lang === "fa" ? "\u0647\u0645\u0647 \u0645\u0627\u0647\u200C\u0647\u0627" : "All Time" : shamsiMonths[filterMonth]), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 } }, [
     { label: lang === "fa" ? "\u062E\u0631\u062C" : "Expenses", val: monthExpense, color: "#f08000", icon: "\u{1F6D2}" },
     { label: lang === "fa" ? "\u062F\u0631\u0622\u0645\u062F" : "Income", val: monthIncome, color: "#58a6ff", icon: "\u{1F4C8}" },
     { label: lang === "fa" ? "\u0633\u0631\u0648\u06CC\u0633" : "Services", val: monthServicesProfit, color: "#b06ed4", icon: "\u{1F485}" }
@@ -2341,7 +2353,7 @@ function BBApp({ currentUser }) {
       items.map(
         (a) => React.createElement(
           "div",
-          { key: a.id, style: { background: cardBg, border: `1px solid ${color}33`, borderRadius: 12, padding: "12px 14px", marginBottom: 8, opacity: a.done ? 0.45 : 1 } },
+          { key: a.id, style: { background: cardBg, border: `1px solid ${color}33`, borderRadius: 12, padding: "12px 14px", marginBottom: 8, opacity: a.done ? 0.7 : 1 } },
           React.createElement(
             "div",
             { style: { display: "flex", justifyContent: "space-between", marginBottom: a.note ? 4 : 0 } },
@@ -2358,6 +2370,13 @@ function BBApp({ currentUser }) {
             React.createElement("button", { onClick: () => {
               if (confirm(t.confirm)) update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id) }));
             }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 15 } }, "\u{1F5D1}")
+          ),
+          a.done && React.createElement(
+            "div",
+            { style: { display: "flex", gap: 6, marginTop: 4 } },
+            React.createElement("button", { onClick: () => {
+              update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id) }));
+            }, style: { background: "#c0392b22", border: "1px solid #c0392b66", color: "#c0392b", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12, pointerEvents: "all" } }, "\u{1F5D1} " + (lang === "fa" ? "\u062D\u0630\u0641" : "Delete"))
           )
         )
       )
