@@ -140,8 +140,8 @@ const olSbFetch = async (method, body) => {
     },
     body: body ? JSON.stringify(body) : void 0
   });
-  if (method === "PATCH") return true;
-  return await res.json();
+
+  return await res.json().catch(() => null);
 };
 const loadRemote = async () => {
   try {
@@ -152,14 +152,16 @@ const loadRemote = async () => {
   return { data: {}, updated_at: null };
 };
 const saveRemote = async (data) => {
+  const ts = (new Date()).toISOString();
   try {
     localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
   } catch (e) {
   }
   try {
-    await olSbFetch("PATCH", { data, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+    await olSbFetch("PATCH", { data, updated_at: ts });
   } catch (e) {
   }
+  return ts;
 };
 const loadLocal = () => {
   try {
@@ -534,8 +536,9 @@ function OLApp({ currentUser }) {
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
       try {
-        await saveRemote(ns);
+        const ts = await saveRemote(ns);
         lastSaved.current = json;
+        if (ts) lastUpdatedAt.current = ts;
         setSync("synced");
         setTimeout(() => setSync("idle"), 2e3);
       } catch (e) {
