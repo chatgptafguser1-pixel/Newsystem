@@ -133,6 +133,26 @@ const toAFN = (amount, currencyId) => {
 };
 const OL_LS_KEY = "ourlife_data";
 const OL_WORKER = "https://limahworker-c366.m-mahdi-mesbah2018.workers.dev?id=ourlife";
+const ARRAY_KEYS = ["budgetHistory","bills","installments","insurance","groceries","other","incomes","savings","savingGoals","debts"];
+function mergeStates(local, remote) {
+  if (!local || Object.keys(local).length === 0) return remote;
+  if (!remote || Object.keys(remote).length === 0) return local;
+  const merged = Object.assign({}, remote);
+  for (const key of ARRAY_KEYS) {
+    const localArr = local[key] || [];
+    const remoteArr = remote[key] || [];
+    const map = {};
+    for (const item of remoteArr) map[item.id] = item;
+    for (const item of localArr) {
+      if (!map[item.id]) map[item.id] = item;
+    }
+    merged[key] = Object.values(map).sort((a,b) => (a.date||"") > (b.date||"") ? -1 : 1);
+  }
+  // settings: prefer most recently changed (remote wins)
+  merged.settings = Object.assign({}, local.settings || {}, remote.settings || {});
+  merged.totalBudget = Math.max(local.totalBudget || 0, remote.totalBudget || 0);
+  return merged;
+}
 const loadRemote = async () => {
   try {
     const res = await fetch(OL_WORKER);
@@ -449,13 +469,13 @@ function OLApp({ currentUser }) {
     }
     loadRemote().then(({ data, updated_at }) => {
       if (data && Object.keys(data).length > 0) {
-        setState(data);
-        lastSaved.current = JSON.stringify(data);
+        setState((prev) => {
+          const merged = mergeStates(prev, data);
+          lastSaved.current = JSON.stringify(merged);
+          try { localStorage.setItem(OL_LS_KEY, JSON.stringify(merged)); } catch(e) {}
+          return merged;
+        });
         lastUpdatedAt.current = updated_at;
-        try {
-          localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
-        } catch (e) {
-        }
       }
       setLoading(false);
     }).catch(() => setLoading(false));
@@ -466,12 +486,12 @@ function OLApp({ currentUser }) {
         const { data, updated_at } = await loadRemote();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
-          setState(data);
-          lastSaved.current = JSON.stringify(data);
-          try {
-            localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
-          } catch (e) {
-          }
+          setState((prev) => {
+            const merged = mergeStates(prev, data);
+            lastSaved.current = JSON.stringify(merged);
+            try { localStorage.setItem(OL_LS_KEY, JSON.stringify(merged)); } catch(e) {}
+            return merged;
+          });
           setSync("synced");
           setTimeout(() => setSync("idle"), 2e3);
         }
@@ -590,11 +610,14 @@ function OLApp({ currentUser }) {
         showToast("⚠️ داده‌ای از سرور نیامد", false);
         return;
       }
-      setState(row.data);
-      lastSaved.current = JSON.stringify(row.data);
+      setState((prev) => {
+        const merged = mergeStates(prev, row.data);
+        lastSaved.current = JSON.stringify(merged);
+        try { localStorage.setItem(OL_LS_KEY, JSON.stringify(merged)); } catch(e) {}
+        setDebugInfo("OK | updated_at: " + row.updated_at + " | budgetHistory: " + (merged.budgetHistory||[]).length + " | bills: " + (merged.bills||[]).length);
+        return merged;
+      });
       lastUpdatedAt.current = row.updated_at;
-      try { localStorage.setItem(OL_LS_KEY, JSON.stringify(row.data)); } catch(e) {}
-      setDebugInfo("OK | updated_at: " + row.updated_at + " | budgetHistory: " + (row.data.budgetHistory||[]).length);
       showToast("✓ سینک شد از سرور");
     } catch(e) {
       setDebugInfo("ERROR: " + e.message);
