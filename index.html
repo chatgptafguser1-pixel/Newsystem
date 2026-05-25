@@ -113,13 +113,13 @@ const fetchLiveRates = async () => {
 };
 fetchLiveRates();
 const CURRENCIES = [
-  { id: "AFN", label: "\u0627\u0641\u063A\u0627\u0646\u06CC", symbol: "\u060B", get rate() {
+  { id: "AFN", label: "Afghani", symbol: "\u060B", get rate() {
     return 1;
   } },
-  { id: "USD", label: "\u062F\u0644\u0627\u0631 \u0622\u0645\u0631\u06CC\u06A9\u0627", symbol: "$", get rate() {
+  { id: "USD", label: "US Dollar", symbol: "$", get rate() {
     return LIVE_RATES.USD;
   } },
-  { id: "AUD", label: "\u062F\u0644\u0627\u0631 \u0627\u0633\u062A\u0631\u0627\u0644\u06CC\u0627", symbol: "A$", get rate() {
+  { id: "AUD", label: "AUD Dollar", symbol: "A$", get rate() {
     return LIVE_RATES.AUD;
   } }
 ];
@@ -266,14 +266,14 @@ function OLBtn(_c) {
     children
   );
 }
-function OLModal({ title, onClose, children }) {
+function OLModal({ title, onClose, children, dir }) {
   React.useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = "";
     };
   }, []);
-  return /* @__PURE__ */ React.createElement("div", { onClick: onClose, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 2e3, display: "flex", alignItems: "flex-end", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("div", { onClick: (e) => e.stopPropagation(), style: {
+  return /* @__PURE__ */ React.createElement("div", { onClick: onClose, style: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", zIndex: 2e3, display: "flex", alignItems: "flex-end", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("div", { dir: dir, onClick: (e) => e.stopPropagation(), style: {
     background: DARK.card,
     border: `1px solid ${DARK.border}`,
     borderRadius: "20px 20px 0 0",
@@ -286,51 +286,52 @@ function OLModal({ title, onClose, children }) {
 }
 function SyncDot({ status }) {
   const color = status === "syncing" ? DARK.yellow : status === "synced" ? DARK.green : status === "error" ? DARK.red : "transparent";
-  const label = status === "syncing" ? "\u0647\u0645\u06AF\u0627\u0645\u200C\u0633\u0627\u0632\u06CC..." : status === "synced" ? "\u0630\u062E\u06CC\u0631\u0647 \u0634\u062F \u2713" : status === "error" ? "\u062E\u0637\u0627" : "";
+  const label = status === "syncing" ? "Syncing..." : status === "synced" ? "Saved \u2713" : status === "error" ? "Error" : "";
   if (!label) return null;
   return /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color, display: "flex", alignItems: "center", gap: 4 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: color, display: "inline-block" } }), label);
 }
 const CAT_BILLS = [
-  { id: "electricity", icon: "\u26A1", label: "\u0628\u0631\u0642" },
-  { id: "water", icon: "\u{1F4A7}", label: "\u0622\u0628" },
-  { id: "gas", icon: "\u{1F525}", label: "\u06AF\u0627\u0632" },
-  { id: "internet", icon: "\u{1F4E1}", label: "\u0627\u06CC\u0646\u062A\u0631\u0646\u062A" },
-  { id: "phone", icon: "\u{1F4F1}", label: "\u0645\u0648\u0628\u0627\u06CC\u0644" },
-  { id: "other_bill", icon: "\u{1F4C4}", label: "\u0633\u0627\u06CC\u0631 \u0642\u0628\u0636" }
+  { id: "electricity", icon: "\u26A1", label: "\u0628\u0631\u0642", en: "Electricity" },
+  { id: "water", icon: "\u{1F4A7}", label: "\u0622\u0628", en: "Water" },
+  { id: "gas", icon: "\u{1F525}", label: "\u06AF\u0627\u0632", en: "Gas" },
+  { id: "internet", icon: "\u{1F4E1}", label: "\u0627\u06CC\u0646\u062A\u0631\u0646\u062A", en: "Internet" },
+  { id: "phone", icon: "\u{1F4F1}", label: "\u0645\u0648\u0628\u0627\u06CC\u0644", en: "Mobile" },
+  { id: "other_bill", icon: "\u{1F4C4}", label: "\u0633\u0627\u06CC\u0631 \u0642\u0628\u0636", en: "Other Bill" }
 ];
 const CAT_INSTALL = [
-  { id: "rent", icon: "\u{1F3E0}", label: "\u0627\u062C\u0627\u0631\u0647" },
-  { id: "loan", icon: "\u{1F3E6}", label: "\u0648\u0627\u0645" },
-  { id: "car_install", icon: "\u{1F697}", label: "\u0642\u0633\u0637 \u0645\u0627\u0634\u06CC\u0646" },
-  { id: "other_install", icon: "\u{1F4B3}", label: "\u0633\u0627\u06CC\u0631 \u0642\u0633\u0637" }
+  { id: "rent", icon: "\u{1F3E0}", label: "\u0627\u062C\u0627\u0631\u0647", en: "Rent" },
+  { id: "loan", icon: "\u{1F3E6}", label: "\u0648\u0627\u0645", en: "Loan" },
+  { id: "car_install", icon: "\u{1F697}", label: "\u0642\u0633\u0637 \u0645\u0627\u0634\u06CC\u0646", en: "Car Payment" },
+  { id: "other_install", icon: "\u{1F4B3}", label: "\u0633\u0627\u06CC\u0631 \u0642\u0633\u0637", en: "Other" }
 ];
 const CAT_INSURANCE = [
-  { id: "health", icon: "\u{1F3E5}", label: "\u0628\u06CC\u0645\u0647 \u0635\u062D\u06CC" },
-  { id: "car_ins", icon: "\u{1F697}", label: "\u0628\u06CC\u0645\u0647 \u0645\u0627\u0634\u06CC\u0646" },
-  { id: "life", icon: "\u2764\uFE0F", label: "\u0628\u06CC\u0645\u0647 \u0639\u0645\u0631" },
-  { id: "other_ins", icon: "\u{1F6E1}\uFE0F", label: "\u0633\u0627\u06CC\u0631 \u0628\u06CC\u0645\u0647" }
+  { id: "health", icon: "\u{1F3E5}", label: "\u0628\u06CC\u0645\u0647 \u0635\u062D\u06CC", en: "Health Ins." },
+  { id: "car_ins", icon: "\u{1F697}", label: "\u0628\u06CC\u0645\u0647 \u0645\u0627\u0634\u06CC\u0646", en: "Car Ins." },
+  { id: "life", icon: "\u2764\uFE0F", label: "\u0628\u06CC\u0645\u0647 \u0639\u0645\u0631", en: "Life Ins." },
+  { id: "other_ins", icon: "\u{1F6E1}\uFE0F", label: "\u0633\u0627\u06CC\u0631 \u0628\u06CC\u0645\u0647", en: "Other Ins." }
 ];
 const CAT_GROCERY = [
-  { id: "food", icon: "\u{1F969}", label: "\u062E\u0648\u0631\u0627\u06A9\u06CC" },
-  { id: "fruit", icon: "\u{1F34E}", label: "\u0645\u06CC\u0648\u0647 \u0648 \u0633\u0628\u0632\u06CC" },
-  { id: "dairy", icon: "\u{1F95B}", label: "\u0644\u0628\u0646\u06CC\u0627\u062A" },
-  { id: "home_stuff", icon: "\u{1F9F9}", label: "\u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647" },
-  { id: "hygiene", icon: "\u{1F9F4}", label: "\u0628\u0647\u062F\u0627\u0634\u062A" },
-  { id: "other_groc", icon: "\u{1F6D2}", label: "\u0633\u0627\u06CC\u0631" }
+  { id: "food", icon: "\u{1F969}", label: "\u062E\u0648\u0631\u0627\u06A9\u06CC", en: "Food" },
+  { id: "fruit", icon: "\u{1F34E}", label: "\u0645\u06CC\u0648\u0647 \u0648 \u0633\u0628\u0632\u06CC", en: "Fruits & Veg" },
+  { id: "dairy", icon: "\u{1F95B}", label: "\u0644\u0628\u0646\u06CC\u0627\u062A", en: "Dairy" },
+  { id: "home_stuff", icon: "\u{1F9F9}", label: "\u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647", en: "Home Supplies" },
+  { id: "hygiene", icon: "\u{1F9F4}", label: "\u0628\u0647\u062F\u0627\u0634\u062A", en: "Hygiene" },
+  { id: "other_groc", icon: "\u{1F6D2}", label: "\u0633\u0627\u06CC\u0631", en: "Other" }
 ];
 const CAT_OTHER = [
-  { id: "clothes", icon: "\u{1F455}", label: "\u067E\u0648\u0634\u0627\u06A9" },
-  { id: "transport", icon: "\u{1F695}", label: "\u0631\u0641\u062A\u200C\u0648\u0622\u0645\u062F" },
-  { id: "health", icon: "\u{1F48A}", label: "\u062F\u0627\u0631\u0648 \u0648 \u062F\u06A9\u062A\u0631" },
-  { id: "fun", icon: "\u{1F389}", label: "\u062A\u0641\u0631\u06CC\u062D" },
-  { id: "kids", icon: "\u{1F476}", label: "\u0628\u0686\u0647" },
-  { id: "other", icon: "\u{1F4E6}", label: "\u0633\u0627\u06CC\u0631" }
+  { id: "clothes", icon: "\u{1F455}", label: "\u067E\u0648\u0634\u0627\u06A9", en: "Clothing" },
+  { id: "transport", icon: "\u{1F695}", label: "\u0631\u0641\u062A\u200C\u0648\u0622\u0645\u062F", en: "Transport" },
+  { id: "health", icon: "\u{1F48A}", label: "\u062F\u0627\u0631\u0648 \u0648 \u062F\u06A9\u062A\u0631", en: "Health" },
+  { id: "fun", icon: "\u{1F389}", label: "\u062A\u0641\u0631\u06CC\u062D", en: "Fun" },
+  { id: "kids", icon: "\u{1F476}", label: "\u0628\u0686\u0647", en: "Kids" },
+  { id: "other", icon: "\u{1F4E6}", label: "\u0633\u0627\u06CC\u0631", en: "Other" }
 ];
-function SectionHeader({ icon, title, color, total, onAdd, count, expanded, onToggle }) {
-  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, cursor: onToggle ? "pointer" : "default", flex: 1 }, onClick: onToggle }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, icon), /* @__PURE__ */ React.createElement("span", { style: { color: color || DARK.accent, fontWeight: 700, fontSize: 14 } }, title), total > 0 && /* @__PURE__ */ React.createElement("span", { style: { background: (color || DARK.accent) + "22", color: color || DARK.accent, fontSize: 11, padding: "2px 8px", borderRadius: 20, fontWeight: 700 } }, fmt(total), " \u0627\u0641\u063A"), count > 0 && /* @__PURE__ */ React.createElement("span", { style: { background: DARK.bg, color: DARK.sub, fontSize: 10, padding: "1px 7px", borderRadius: 20 } }, count, " \u0645\u0648\u0631\u062F"), onToggle && /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 12, marginRight: 2 } }, expanded ? "\u25B2" : "\u25BC")), onAdd && /* @__PURE__ */ React.createElement("button", { onClick: (e) => {
+function SectionHeader({ icon, title, color, total, onAdd, count, expanded, onToggle, lang }) {
+  const isEn = lang === "en";
+  return /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8, cursor: onToggle ? "pointer" : "default", flex: 1 }, onClick: onToggle }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 18 } }, icon), /* @__PURE__ */ React.createElement("span", { style: { color: color || DARK.accent, fontWeight: 700, fontSize: 14 } }, title), total > 0 && /* @__PURE__ */ React.createElement("span", { style: { background: (color || DARK.accent) + "22", color: color || DARK.accent, fontSize: 11, padding: "2px 8px", borderRadius: 20, fontWeight: 700 } }, fmt(total), isEn ? " AFN" : " \u0627\u0641\u063A"), count > 0 && /* @__PURE__ */ React.createElement("span", { style: { background: DARK.bg, color: DARK.sub, fontSize: 10, padding: "1px 7px", borderRadius: 20 } }, count, isEn ? " items" : " \u0645\u0648\u0631\u062F"), onToggle && /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 12, marginRight: 2 } }, expanded ? "\u25B2" : "\u25BC")), onAdd && /* @__PURE__ */ React.createElement("button", { onClick: (e) => {
     e.stopPropagation();
     onAdd();
-  }, style: { background: (color || DARK.accent) + "22", border: `1px dashed ${color || DARK.accent}66`, color: color || DARK.accent, borderRadius: 20, padding: "4px 12px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, "+ \u0627\u0641\u0632\u0648\u062F\u0646"));
+  }, style: { background: (color || DARK.accent) + "22", border: `1px dashed ${color || DARK.accent}66`, color: color || DARK.accent, borderRadius: 20, padding: "4px 12px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, isEn ? "+ Add" : "+ \u0627\u0641\u0632\u0648\u062F\u0646"));
 }
 function ItemRow({ icon, label, sub, amount, currency, amountAFN, color, onDelete, onEdit }) {
   const [confirming, setConfirming] = React.useState(false);
@@ -399,7 +400,7 @@ function AddExpenseForm({ cats, onSave, onCancel, myName, spouseName, lang }) {
     color: lForm.cat === c.id ? "#0a0f1a" : DARK.sub,
     border: lForm.cat === c.id ? "none" : `1px solid ${DARK.border}`,
     fontWeight: lForm.cat === c.id ? 700 : 400
-  } }, c.icon, " ", c.label))), /* @__PURE__ */ React.createElement(Inp, { label: lang === "en" ? "Description" : "\u062A\u0648\u0636\u06CC\u062D", placeholder: lang === "en" ? "e.g. monthly rent" : "\u0645\u062B\u0644\u0627\u064B: \u0627\u062C\u0627\u0631\u0647 \u0645\u0627\u0647 \u062D\u0648\u062A", value: lForm.desc, onChange: (e) => lv("desc", e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, lang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => lv("currency", c.id), style: {
+  } }, c.icon, " ", lang === "en" ? (c.en || c.label) : c.label))), /* @__PURE__ */ React.createElement(Inp, { label: lang === "en" ? "Description" : "\u062A\u0648\u0636\u06CC\u062D", placeholder: lang === "en" ? "e.g. monthly rent" : "\u0645\u062B\u0644\u0627\u064B: \u0627\u062C\u0627\u0631\u0647 \u0645\u0627\u0647 \u062D\u0648\u062A", value: lForm.desc, onChange: (e) => lv("desc", e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, lang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => lv("currency", c.id), style: {
     flex: 1,
     padding: "6px 2px",
     borderRadius: 8,
@@ -422,15 +423,11 @@ function AddExpenseForm({ cats, onSave, onCancel, myName, spouseName, lang }) {
   } }, "\u{1F464} ", n)))), /* @__PURE__ */ React.createElement(Inp, { label: lang === "en" ? "Date" : "\u062A\u0627\u0631\u06CC\u062E", type: "date", value: lForm.date, onChange: (e) => lv("date", e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement(OLBtn, { full: true, color: DARK.accent, onClick: () => {
     if (!lForm.amount) return;
     onSave(__spreadProps(__spreadValues({}, lForm), { amountAFN: Math.round(toAFN(lForm.amount, lForm.currency)) }));
-  } }, "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: onCancel }, lang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641")));
+  } }, lang === "en" ? "\u2713 Save" : "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: onCancel }, lang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641")));
 }
-function OLApp() {
+function OLApp({ currentUser }) {
   const [state, setState] = React.useState(DEFAULT);
   const [loading, setLoading] = React.useState(true);
-  const [authed, setAuthed] = React.useState(false);
-  const [pwInput, setPwInput] = React.useState("");
-  const [pwErr, setPwErr] = React.useState("");
-  const [loginLoading, setLoginLoading] = React.useState(false);
   const [tab, setTab] = React.useState("dashboard");
   const [modal, setModal] = React.useState(null);
   const [form, setForm] = React.useState({});
@@ -480,6 +477,14 @@ function OLApp() {
               merged[key] = [...localArr, ...newItems];
             }
             merged.settings = data.settings || prev.settings;
+            // Merge presence: keep newest timestamp per user
+            const localPresence = prev.presence || {};
+            const remotePresence = data.presence || {};
+            const mergedPresence = __spreadValues(__spreadValues({}, remotePresence), localPresence);
+            for (const [u, ts] of Object.entries(remotePresence)) {
+              if (!localPresence[u] || new Date(ts) > new Date(localPresence[u])) mergedPresence[u] = ts;
+            }
+            merged.presence = mergedPresence;
             delete merged.totalBudget;
             lastSaved.current = JSON.stringify(merged);
             try {
@@ -496,6 +501,32 @@ function OLApp() {
     }, 1e4);
     return () => clearInterval(poll);
   }, []);
+  // Presence: write current user's heartbeat every 20s, read others
+  const [onlineUsers, setOnlineUsers] = React.useState({});
+  React.useEffect(() => {
+    if (!currentUser) return;
+    const writePresence = () => {
+      update((s) => {
+        const presence = __spreadValues({}, s.presence || {});
+        presence[currentUser] = new Date().toISOString();
+        return __spreadProps(__spreadValues({}, s), { presence });
+      });
+    };
+    writePresence();
+    const interval = setInterval(writePresence, 20000);
+    return () => clearInterval(interval);
+  }, [currentUser]);
+  React.useEffect(() => {
+    const now = Date.now();
+    const presence = state.presence || {};
+    const online = {};
+    for (const [user, ts] of Object.entries(presence)) {
+      if (user !== currentUser && ts && (now - new Date(ts).getTime()) < 120000) {
+        online[user] = ts;
+      }
+    }
+    setOnlineUsers(online);
+  }, [state.presence, currentUser]);
   const persist = React.useCallback((ns) => {
     const json = JSON.stringify(ns);
     if (json === lastSaved.current) return;
@@ -577,44 +608,14 @@ function OLApp() {
     setModal("editItem");
   };
   const fv = (k, v) => setForm((p) => __spreadProps(__spreadValues({}, p), { [k]: v }));
+  React.useEffect(() => {
+    const lang = state.settings && state.settings.lang || "fa";
+    const dir = lang === "en" ? "ltr" : "rtl";
+    document.documentElement.dir = dir;
+    document.documentElement.lang = lang;
+    document.body.dir = dir;
+  }, [state.settings && state.settings.lang]);
   if (loading) return /* @__PURE__ */ React.createElement("div", { style: { minHeight: "100vh", background: DARK.bg, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 52 } }, "\u{1F3E0}"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontSize: 14 } }, state.settings && state.settings.lang === "en" ? "Loading..." : "\u062F\u0631 \u062D\u0627\u0644 \u0628\u0627\u0631\u06AF\u0630\u0627\u0631\u06CC..."));
-  const handleLogin = async () => {
-    if (loginLoading) return;
-    setLoginLoading(true);
-    const ok = await checkPw(pwInput, state.password);
-    if (ok) {
-      setAuthed(true);
-      setPwInput("");
-      if (!state.password.startsWith("sha256:")) {
-        hashPw(pwInput).then((h) => update((s) => __spreadProps(__spreadValues({}, s), { password: h })));
-      }
-    } else {
-      setPwErr("\u274C \u0631\u0645\u0632 \u0627\u0634\u062A\u0628\u0627\u0647!");
-      setLoginLoading(false);
-    }
-  };
-  if (!authed) return /* @__PURE__ */ React.createElement("div", { dir: (state.settings && state.settings.lang) === "en" ? "ltr" : "rtl", style: { minHeight: "100vh", background: DARK.bg, display: "flex", alignItems: "center", justifyContent: "center" } }, /* @__PURE__ */ React.createElement("div", { style: {
-    background: DARK.card,
-    border: `1px solid ${DARK.accent}44`,
-    borderRadius: 24,
-    padding: "48px 32px",
-    width: "90%",
-    maxWidth: 340,
-    textAlign: "center",
-    boxShadow: `0 0 80px ${DARK.accent}11`
-  } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 64, marginBottom: 8 } }, "\u{1F3E0}"), /* @__PURE__ */ React.createElement("h2", { style: { color: DARK.accent, margin: "0 0 4px", fontSize: 24, letterSpacing: "-0.5px" } }, "\u0632\u0646\u062F\u06AF\u06CC \u0645\u0627"), /* @__PURE__ */ React.createElement("p", { style: { color: DARK.sub, margin: "0 0 32px", fontSize: 12 } }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC \u0632\u0646\u062F\u06AF\u06CC \u062F\u0648\u0646\u0641\u0631\u0647"), /* @__PURE__ */ React.createElement(
-    Inp,
-    {
-      type: "password",
-      placeholder: "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u0631\u0627 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F",
-      value: pwInput,
-      onChange: (e) => {
-        setPwInput(e.target.value);
-        setPwErr("");
-      },
-      onKeyDown: (e) => e.key === "Enter" && handleLogin()
-    }
-  ), pwErr && /* @__PURE__ */ React.createElement("p", { style: { color: DARK.red, fontSize: 12, margin: "-6px 0 12px" } }, pwErr), /* @__PURE__ */ React.createElement(OLBtn, { full: true, onClick: handleLogin, style: { padding: 12, fontSize: 15, opacity: loginLoading ? 0.6 : 1 }, color: DARK.accent }, loginLoading ? "..." : "\u0648\u0631\u0648\u062F \u2190")));
   const totalBudget = (state.budgetHistory || []).reduce((s, h) => s + (h.amount || 0), 0);
   const sumArr = (arr) => (arr || []).reduce((s, i) => s + Number(i.amountAFN || i.amount || 0), 0);
   const totalBills = sumArr(state.bills);
@@ -646,7 +647,26 @@ function OLApp() {
       return;
     }
     if (window.__goBackToShell) window.__goBackToShell();
-  }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, "\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncDot, { status: sync }))), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.accent, style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, textTransform: "uppercase", marginBottom: 4 } }, olLang === "en" ? "Total Budget" : "\u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 28 } }, fmt(totalBudget)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN" : "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addBudget"), style: {
+  }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? "\u{1F3E0} Our Life" : "\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } },
+      currentUser && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#64748b", display: "flex", alignItems: "center", gap: 4 } },
+        /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#34d399", display: "inline-block" } }),
+        currentUser
+      ),
+      Object.keys(onlineUsers).length > 0 && Object.keys(onlineUsers).map((user) =>
+        /* @__PURE__ */ React.createElement("span", { key: user, style: { display: "flex", alignItems: "center", gap: 4, background: "#4fc3f722", border: "1px solid #4fc3f744", borderRadius: 20, padding: "2px 10px", fontSize: 11, color: "#4fc3f7", fontWeight: 700 } },
+          /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#4fc3f7", display: "inline-block" } }),
+          user, " \u{1F44B}"
+        )
+      ),
+      /* @__PURE__ */ React.createElement(SyncDot, { status: sync }))), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
+    Object.keys(onlineUsers).length > 0 && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
+      /* @__PURE__ */ React.createElement("span", { style: { fontSize: 22 } }, "\u{1F91D}"),
+      /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } },
+        /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "Both of you are online!" : "\u0647\u0631 \u062F\u0648\u062A\u0627\u0646 \u0622\u0646\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F! \u{1F4F1}"),
+        /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, currentUser, " + ", Object.keys(onlineUsers).join(", "), olLang === "en" ? " are using the app together" : " \u0647\u0645\u0632\u0645\u0627\u0646 \u062F\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0647\u0633\u062A\u06CC\u062F")
+      ),
+      /* @__PURE__ */ React.createElement("span", { style: { width: 10, height: 10, borderRadius: "50%", background: "#34d399", display: "inline-block", boxShadow: "0 0 8px #34d399" } })
+    ), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.accent, style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, textTransform: "uppercase", marginBottom: 4 } }, olLang === "en" ? "Total Budget" : "\u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 28 } }, fmt(totalBudget)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN" : "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addBudget"), style: {
     background: DARK.accent + "22",
     border: `1px dashed ${DARK.accent}66`,
     color: DARK.accent,
@@ -666,16 +686,16 @@ function OLApp() {
     { label: olLang === "en" ? "Insurance" : "\u0628\u06CC\u0645\u0647", val: totalInsurance, icon: "\u{1F6E1}\uFE0F", color: "#a78bfa" },
     { label: olLang === "en" ? "Groceries" : "\u062E\u0648\u0631\u0627\u06A9\u06CC \u0648 \u062E\u0648\u0646\u0647", val: totalGroceries, icon: "\u{1F6D2}", color: "#34d399" },
     { label: olLang === "en" ? "Other" : "\u0633\u0627\u06CC\u0631", val: totalOther, icon: "\u{1F4E6}", color: "#64748b" }
-  ].map((c) => /* @__PURE__ */ React.createElement("div", { key: c.label, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: `1px solid ${DARK.border}` } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 13 } }, c.icon, " ", c.label), /* @__PURE__ */ React.createElement("span", { style: { color: c.color, fontWeight: 700, fontSize: 13 } }, fmt(c.val), " \u0627\u0641\u063A"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0 0", fontWeight: 700 } }, /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 12 } }, olLang === "en" ? "Total Expenses" : "\u062C\u0645\u0639 \u06A9\u0644 \u0647\u0632\u06CC\u0646\u0647"), /* @__PURE__ */ React.createElement("span", { style: { color: DARK.red, fontSize: 16 } }, fmt(totalExpenses), " ", olLang === "en" ? "AFN" : "\u0627\u0641\u063A"))), (state.budgetHistory || []).length > 0 && /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "\u{1F4B0} Budget History" : "\u{1F4B0} \u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647"), (state.budgetHistory || []).length > 5 && /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "Last 5 of " : "\u0622\u062E\u0631\u06CC\u0646 \u06F5 \u0645\u0648\u0631\u062F \u0627\u0632 ", (state.budgetHistory || []).length)), [...state.budgetHistory || []].reverse().slice(0, 5).map((h) => /* @__PURE__ */ React.createElement("div", { key: h.id, style: { display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${DARK.border}` } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12 } }, h.desc || (olLang === "en" ? "Budget added" : "\u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647")), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, gregorianToJalali(h.date))), /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, fontSize: 13, color: h.amount >= 0 ? DARK.green : DARK.red } }, h.amount >= 0 ? "+" : "", fmt(Math.abs(h.amount))))))), tab === "expenses" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12, position: "relative" } }, /* @__PURE__ */ React.createElement("input", { value: searchQ, onChange: (e) => setSearchQ(e.target.value), placeholder: olLang === "en" ? "\u{1F50D} Search expenses..." : "\u{1F50D} \u062C\u0633\u062A\u062C\u0648 \u062F\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627...", style: { width: "100%", background: DARK.card, border: `1px solid ${DARK.border}`, borderRadius: 10, padding: "9px 14px", color: DARK.text, fontSize: 13, outline: "none", boxSizing: "border-box" } }), searchQ && /* @__PURE__ */ React.createElement("button", { onClick: () => setSearchQ(""), style: { position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: DARK.sub, cursor: "pointer", fontSize: 16 } }, "\u2715")), (() => {
+  ].map((c) => /* @__PURE__ */ React.createElement("div", { key: c.label, style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "7px 0", borderBottom: `1px solid ${DARK.border}` } }, /* @__PURE__ */ React.createElement("span", { style: { fontSize: 13 } }, c.icon, " ", c.label), /* @__PURE__ */ React.createElement("span", { style: { color: c.color, fontWeight: 700, fontSize: 13 } }, fmt(c.val), " AFN"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0 0", fontWeight: 700 } }, /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 12 } }, olLang === "en" ? "Total Expenses" : "\u062C\u0645\u0639 \u06A9\u0644 \u0647\u0632\u06CC\u0646\u0647"), /* @__PURE__ */ React.createElement("span", { style: { color: DARK.red, fontSize: 16 } }, fmt(totalExpenses), " ", olLang === "en" ? "AFN" : "\u0627\u0641\u063A"))), (state.budgetHistory || []).length > 0 && /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "\u{1F4B0} Budget History" : "\u{1F4B0} \u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647"), (state.budgetHistory || []).length > 5 && /* @__PURE__ */ React.createElement("span", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "Last 5 of " : "\u0622\u062E\u0631\u06CC\u0646 \u06F5 \u0645\u0648\u0631\u062F \u0627\u0632 ", (state.budgetHistory || []).length)), [...state.budgetHistory || []].reverse().slice(0, 5).map((h) => /* @__PURE__ */ React.createElement("div", { key: h.id, style: { display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${DARK.border}` } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12 } }, h.desc || (olLang === "en" ? "Budget added" : "\u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647")), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, gregorianToJalali(h.date))), /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, fontSize: 13, color: h.amount >= 0 ? DARK.green : DARK.red } }, h.amount >= 0 ? "+" : "", fmt(Math.abs(h.amount))))))), tab === "expenses" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12, position: "relative" } }, /* @__PURE__ */ React.createElement("input", { value: searchQ, onChange: (e) => setSearchQ(e.target.value), placeholder: olLang === "en" ? "\u{1F50D} Search expenses..." : "\u{1F50D} \u062C\u0633\u062A\u062C\u0648 \u062F\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627...", style: { width: "100%", background: DARK.card, border: `1px solid ${DARK.border}`, borderRadius: 10, padding: "9px 14px", color: DARK.text, fontSize: 13, outline: "none", boxSizing: "border-box" } }), searchQ && /* @__PURE__ */ React.createElement("button", { onClick: () => setSearchQ(""), style: { position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: DARK.sub, cursor: "pointer", fontSize: 16 } }, "\u2715")), (() => {
     const filtered = (state.bills || []).filter((item) => {
       var _a;
       return !searchQ || ((_a = item.desc) == null ? void 0 : _a.includes(searchQ));
     });
     const isExp = !collapsed.bills || searchQ;
     const shown = isExp ? filtered : filtered.slice(0, PREVIEW);
-    return /* @__PURE__ */ React.createElement(Card, { accent: "#fbbf24" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4A1}", title: "\u0628\u0644 (\u0642\u0628\u0636)", color: "#fbbf24", total: totalBills, onAdd: () => setModal("addBills"), count: filtered.length, expanded: !collapsed.bills, onToggle: () => toggleCollapse("bills") }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
+    return /* @__PURE__ */ React.createElement(Card, { accent: "#fbbf24" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4A1}", title: olLang === "en" ? "Bills" : "\u0628\u0644 (\u0642\u0628\u0636)", color: "#fbbf24", total: totalBills, onAdd: () => setModal("addBills"), count: filtered.length, expanded: !collapsed.bills, onToggle: () => toggleCollapse("bills"), lang: olLang }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
       const cat = CAT_BILLS.find((c) => c.id === item.cat) || CAT_BILLS[5];
-      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#fbbf24", onDelete: () => delItem("bills", item.id), onEdit: () => openEdit("bills", item) });
+      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${olLang === "en" ? (cat.en || cat.label) : cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#fbbf24", onDelete: () => delItem("bills", item.id), onEdit: () => openEdit("bills", item) });
     }), !searchQ && filtered.length > PREVIEW && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => toggleCollapse("bills"), style: { background: "#fbbf2422", border: "1px solid #fbbf2444", color: "#fbbf24", borderRadius: 20, padding: "5px 18px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, collapsed.bills ? (olLang === "en" ? `\u25BC Show all ${filtered.length}` : `\u25BC \u0646\u0645\u0627\u06CC\u0634 \u0647\u0645\u0647 ${filtered.length} \u0645\u0648\u0631\u062F`) : (olLang === "en" ? "\u25B2 Collapse" : "\u25B2 \u0628\u0633\u062A\u0646"))));
   })(), (() => {
     const filtered = (state.installments || []).filter((item) => {
@@ -684,9 +704,9 @@ function OLApp() {
     });
     const isExp = !collapsed.installments || searchQ;
     const shown = isExp ? filtered : filtered.slice(0, PREVIEW);
-    return /* @__PURE__ */ React.createElement(Card, { accent: "#f87171" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4B3}", title: "\u0642\u0633\u0637\u200C\u0647\u0627", color: "#f87171", total: totalInstall, onAdd: () => setModal("addInstall"), count: filtered.length, expanded: !collapsed.installments, onToggle: () => toggleCollapse("installments") }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
+    return /* @__PURE__ */ React.createElement(Card, { accent: "#f87171" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4B3}", title: olLang === "en" ? "Installments" : "\u0642\u0633\u0637\u200C\u0647\u0627", color: "#f87171", total: totalInstall, onAdd: () => setModal("addInstall"), count: filtered.length, expanded: !collapsed.installments, onToggle: () => toggleCollapse("installments"), lang: olLang }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
       const cat = CAT_INSTALL.find((c) => c.id === item.cat) || CAT_INSTALL[3];
-      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#f87171", onDelete: () => delItem("installments", item.id), onEdit: () => openEdit("installments", item) });
+      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${olLang === "en" ? (cat.en || cat.label) : cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#f87171", onDelete: () => delItem("installments", item.id), onEdit: () => openEdit("installments", item) });
     }), !searchQ && filtered.length > PREVIEW && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => toggleCollapse("installments"), style: { background: "#f8717122", border: "1px solid #f8717144", color: "#f87171", borderRadius: 20, padding: "5px 18px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, collapsed.installments ? (olLang === "en" ? `\u25BC Show all ${filtered.length}` : `\u25BC \u0646\u0645\u0627\u06CC\u0634 \u0647\u0645\u0647 ${filtered.length} \u0645\u0648\u0631\u062F`) : (olLang === "en" ? "\u25B2 Collapse" : "\u25B2 \u0628\u0633\u062A\u0646"))));
   })(), (() => {
     const filtered = (state.insurance || []).filter((item) => {
@@ -695,9 +715,9 @@ function OLApp() {
     });
     const isExp = !collapsed.insurance || searchQ;
     const shown = isExp ? filtered : filtered.slice(0, PREVIEW);
-    return /* @__PURE__ */ React.createElement(Card, { accent: "#a78bfa" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F6E1}\uFE0F", title: "\u0628\u06CC\u0645\u0647", color: "#a78bfa", total: totalInsurance, onAdd: () => setModal("addInsurance"), count: filtered.length, expanded: !collapsed.insurance, onToggle: () => toggleCollapse("insurance") }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
+    return /* @__PURE__ */ React.createElement(Card, { accent: "#a78bfa" }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F6E1}\uFE0F", title: olLang === "en" ? "Insurance" : "\u0628\u06CC\u0645\u0647", color: "#a78bfa", total: totalInsurance, onAdd: () => setModal("addInsurance"), count: filtered.length, expanded: !collapsed.insurance, onToggle: () => toggleCollapse("insurance"), lang: olLang }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
       const cat = CAT_INSURANCE.find((c) => c.id === item.cat) || CAT_INSURANCE[3];
-      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#a78bfa", onDelete: () => delItem("insurance", item.id), onEdit: () => openEdit("insurance", item) });
+      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${olLang === "en" ? (cat.en || cat.label) : cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: "#a78bfa", onDelete: () => delItem("insurance", item.id), onEdit: () => openEdit("insurance", item) });
     }), !searchQ && filtered.length > PREVIEW && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => toggleCollapse("insurance"), style: { background: "#a78bfa22", border: "1px solid #a78bfa44", color: "#a78bfa", borderRadius: 20, padding: "5px 18px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, collapsed.insurance ? (olLang === "en" ? `\u25BC Show all ${filtered.length}` : `\u25BC \u0646\u0645\u0627\u06CC\u0634 \u0647\u0645\u0647 ${filtered.length} \u0645\u0648\u0631\u062F`) : (olLang === "en" ? "\u25B2 Collapse" : "\u25B2 \u0628\u0633\u062A\u0646"))));
   })(), (() => {
     const filtered = (state.groceries || []).filter((item) => {
@@ -706,9 +726,9 @@ function OLApp() {
     });
     const isExp = !collapsed.groceries || searchQ;
     const shown = isExp ? filtered : filtered.slice(0, PREVIEW);
-    return /* @__PURE__ */ React.createElement(Card, { accent: DARK.green }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F6D2}", title: "\u062E\u0648\u0631\u0627\u06A9\u06CC \u0648 \u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647", color: DARK.green, total: totalGroceries, onAdd: () => setModal("addGrocery"), count: filtered.length, expanded: !collapsed.groceries, onToggle: () => toggleCollapse("groceries") }), /* @__PURE__ */ React.createElement("div", { style: { background: DARK.green + "11", border: `1px solid ${DARK.green}22`, borderRadius: 8, padding: "6px 10px", marginBottom: 10, fontSize: 11, color: DARK.green } }, "\u{1F4A1} \u0627\u06CC\u0646 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627 \u0627\u0632 \u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC \u06A9\u0633\u0631 \u0645\u06CC\u200C\u0634\u0648\u062F"), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
+    return /* @__PURE__ */ React.createElement(Card, { accent: DARK.green }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F6D2}", title: olLang === "en" ? "Groceries & Home" : "\u062E\u0648\u0631\u0627\u06A9\u06CC \u0648 \u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647", color: DARK.green, total: totalGroceries, onAdd: () => setModal("addGrocery"), count: filtered.length, expanded: !collapsed.groceries, onToggle: () => toggleCollapse("groceries"), lang: olLang }), /* @__PURE__ */ React.createElement("div", { style: { background: DARK.green + "11", border: `1px solid ${DARK.green}22`, borderRadius: 8, padding: "6px 10px", marginBottom: 10, fontSize: 11, color: DARK.green } }, "\u{1F4A1} \u0627\u06CC\u0646 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627 \u0627\u0632 \u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC \u06A9\u0633\u0631 \u0645\u06CC\u200C\u0634\u0648\u062F"), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
       const cat = CAT_GROCERY.find((c) => c.id === item.cat) || CAT_GROCERY[5];
-      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.green, onDelete: () => delItem("groceries", item.id), onEdit: () => openEdit("groceries", item) });
+      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${olLang === "en" ? (cat.en || cat.label) : cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.green, onDelete: () => delItem("groceries", item.id), onEdit: () => openEdit("groceries", item) });
     }), !searchQ && filtered.length > PREVIEW && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => toggleCollapse("groceries"), style: { background: DARK.green + "22", border: `1px solid ${DARK.green}44`, color: DARK.green, borderRadius: 20, padding: "5px 18px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, collapsed.groceries ? (olLang === "en" ? `\u25BC Show all ${filtered.length}` : `\u25BC \u0646\u0645\u0627\u06CC\u0634 \u0647\u0645\u0647 ${filtered.length} \u0645\u0648\u0631\u062F`) : (olLang === "en" ? "\u25B2 Collapse" : "\u25B2 \u0628\u0633\u062A\u0646"))));
   })(), (() => {
     const filtered = (state.other || []).filter((item) => {
@@ -717,11 +737,11 @@ function OLApp() {
     });
     const isExp = !collapsed.other || searchQ;
     const shown = isExp ? filtered : filtered.slice(0, PREVIEW);
-    return /* @__PURE__ */ React.createElement(Card, { accent: DARK.sub }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4E6}", title: "\u0633\u0627\u06CC\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627", color: DARK.sub, total: totalOther, onAdd: () => setModal("addOther"), count: filtered.length, expanded: !collapsed.other, onToggle: () => toggleCollapse("other") }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
+    return /* @__PURE__ */ React.createElement(Card, { accent: DARK.sub }, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4E6}", title: olLang === "en" ? "Other Expenses" : "\u0633\u0627\u06CC\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627", color: DARK.sub, total: totalOther, onAdd: () => setModal("addOther"), count: filtered.length, expanded: !collapsed.other, onToggle: () => toggleCollapse("other"), lang: olLang }), filtered.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: "10px 0", fontSize: 12 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : shown.map((item) => {
       const cat = CAT_OTHER.find((c) => c.id === item.cat) || CAT_OTHER[5];
-      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.sub, onDelete: () => delItem("other", item.id), onEdit: () => openEdit("other", item) });
+      return /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: cat.icon, label: item.desc, sub: `${olLang === "en" ? (cat.en || cat.label) : cat.label} \xB7 ${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.sub, onDelete: () => delItem("other", item.id), onEdit: () => openEdit("other", item) });
     }), !searchQ && filtered.length > PREVIEW && /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginTop: 8 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => toggleCollapse("other"), style: { background: DARK.sub + "22", border: `1px solid ${DARK.sub}44`, color: DARK.sub, borderRadius: 20, padding: "5px 18px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, collapsed.other ? (olLang === "en" ? `\u25BC Show all ${filtered.length}` : `\u25BC \u0646\u0645\u0627\u06CC\u0634 \u0647\u0645\u0647 ${filtered.length} \u0645\u0648\u0631\u062F`) : (olLang === "en" ? "\u25B2 Collapse" : "\u25B2 \u0628\u0633\u062A\u0646"))));
-  })()), tab === "income" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Card, { style: { textAlign: "center", marginBottom: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, "\u{1F464} ", myName), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 20 } }, fmt((state.incomes || []).filter((i) => i.by === myName).reduce((s, i) => s + Number(i.amount || 0), 0))), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement(Card, { style: { textAlign: "center", marginBottom: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, "\u{1F464} ", spouseName), /* @__PURE__ */ React.createElement("div", { style: { color: "#a78bfa", fontWeight: 700, fontSize: 20 } }, fmt((state.incomes || []).filter((i) => i.by === spouseName).reduce((s, i) => s + Number(i.amount || 0), 0))), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, "\u0627\u0641\u063A\u0627\u0646\u06CC"))), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4C8}", title: olLang === "en" ? "Incomes" : "\u062F\u0631\u0622\u0645\u062F\u0647\u0627", color: DARK.accent, total: totalIncome, onAdd: () => setModal("addIncome") }), (state.incomes || []).length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: 20, fontSize: 13 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : [...state.incomes || []].reverse().map((item) => /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: "\u{1F4B0}", label: item.desc || "\u062F\u0631\u0622\u0645\u062F", sub: `${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.accent, onDelete: () => delItem("incomes", item.id), onEdit: () => openEdit("incomes", item) })))), tab === "saving" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.green }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, olLang === "en" ? "Total Savings" : "\u06A9\u0644 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.green, fontWeight: 700, fontSize: 28 } }, fmt(totalSaved)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN (total equivalent)" : "\u0627\u0641\u063A\u0627\u0646\u06CC (\u0645\u0639\u0627\u062F\u0644 \u06A9\u0644)"), LIVE_RATES.updatedAt && /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, olLang === "en" ? "Rate: $1=" : "\u0646\u0631\u062E: $1=", LIVE_RATES.USD, "\u060B \xB7 A$1=", LIVE_RATES.AUD, "\u060B")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addSaving"), style: {
+  })()), tab === "income" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Card, { style: { textAlign: "center", marginBottom: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, "\u{1F464} ", myName), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 20 } }, fmt((state.incomes || []).filter((i) => i.by === myName).reduce((s, i) => s + Number(i.amount || 0), 0))), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement(Card, { style: { textAlign: "center", marginBottom: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, "\u{1F464} ", spouseName), /* @__PURE__ */ React.createElement("div", { style: { color: "#a78bfa", fontWeight: 700, fontSize: 20 } }, fmt((state.incomes || []).filter((i) => i.by === spouseName).reduce((s, i) => s + Number(i.amount || 0), 0))), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, "\u0627\u0641\u063A\u0627\u0646\u06CC"))), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement(SectionHeader, { icon: "\u{1F4C8}", title: olLang === "en" ? "Incomes" : "\u062F\u0631\u0622\u0645\u062F\u0647\u0627", color: DARK.accent, total: totalIncome, onAdd: () => setModal("addIncome"), lang: olLang }), (state.incomes || []).length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, textAlign: "center", padding: 20, fontSize: 13 } }, olLang === "en" ? "No records" : olLang === "en" ? "No records" : "\u0645\u0648\u0631\u062F\u06CC \u062B\u0628\u062A \u0646\u0634\u062F\u0647") : [...state.incomes || []].reverse().map((item) => /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: "\u{1F4B0}", label: item.desc || "\u062F\u0631\u0622\u0645\u062F", sub: `${item.by} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.accent, onDelete: () => delItem("incomes", item.id), onEdit: () => openEdit("incomes", item) })))), tab === "saving" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.green }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, marginBottom: 4 } }, olLang === "en" ? "Total Savings" : "\u06A9\u0644 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.green, fontWeight: 700, fontSize: 28 } }, fmt(totalSaved)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN (total equivalent)" : "\u0627\u0641\u063A\u0627\u0646\u06CC (\u0645\u0639\u0627\u062F\u0644 \u06A9\u0644)"), LIVE_RATES.updatedAt && /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 10 } }, olLang === "en" ? "Rate: $1=" : "\u0646\u0631\u062E: $1=", LIVE_RATES.USD, "\u060B \xB7 A$1=", LIVE_RATES.AUD, "\u060B")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addSaving"), style: {
     background: DARK.green + "22",
     border: `1px dashed ${DARK.green}66`,
     color: DARK.green,
@@ -790,10 +810,10 @@ function OLApp() {
       currency: form.currency || "AFN",
       date: form.date
     });
-    showToast("\u2713 \u0648\u06CC\u0631\u0627\u06CC\u0634 \u0634\u062F");
+    showToast(olLang === "en" ? "\u2713 Edited" : "\u2713 \u0648\u06CC\u0631\u0627\u06CC\u0634 \u0634\u062F");
     closeModal();
     setEditTarget(null);
-  } }, "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addBudget" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F4B0} \u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647 \u0632\u0646\u062F\u06AF\u06CC", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
+  } }, olLang === "en" ? "\u2713 Save" : "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addBudget" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F4B0} Add Budget" : "\u{1F4B0} \u0627\u0641\u0632\u0648\u062F\u0646 \u0628\u0648\u062F\u062C\u0647 \u0632\u0646\u062F\u06AF\u06CC", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
     flex: 1,
     padding: "6px 2px",
     borderRadius: 8,
@@ -819,9 +839,9 @@ function OLApp() {
     const amt = Math.round(toAFN(rawAmt, form.currency || "AFN"));
     const delta = form.op === "sub" ? -amt : amt;
     update((s) => __spreadProps(__spreadValues({}, s), { budgetHistory: [...s.budgetHistory || [], { id: uid(), amount: delta, desc: form.desc, date: form.date || today(), currency: form.currency || "AFN", origAmount: rawAmt }] }));
-    showToast("\u2713 \u0628\u0648\u062F\u062C\u0647 \u062B\u0628\u062A \u0634\u062F");
+    showToast(olLang === "en" ? "\u2713 Budget saved" : "\u2713 \u0628\u0648\u062F\u062C\u0647 \u062B\u0628\u062A \u0634\u062F");
     closeModal();
-  } }, "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addBills" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F4A1} \u062B\u0628\u062A \u0628\u0644 (\u0642\u0628\u0636)", onClose: closeModal }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_BILLS, onSave: (lf) => addItem("bills", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addInstall" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F4B3} \u062B\u0628\u062A \u0642\u0633\u0637", onClose: closeModal }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_INSTALL, onSave: (lf) => addItem("installments", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addInsurance" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F6E1}\uFE0F \u062B\u0628\u062A \u0628\u06CC\u0645\u0647", onClose: closeModal }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_INSURANCE, onSave: (lf) => addItem("insurance", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addGrocery" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F6D2} \u062E\u0648\u0631\u0627\u06A9\u06CC \u0648 \u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.green + "11", border: `1px solid ${DARK.green}22`, borderRadius: 8, padding: "8px 12px", marginBottom: 12, fontSize: 12, color: DARK.green } }, "\u{1F4A1} \u0627\u06CC\u0646 \u0647\u0632\u06CC\u0646\u0647 \u0627\u0632 \u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC (", fmt(totalBudget), " \u0627\u0641\u063A) \u06A9\u0633\u0631 \u0645\u06CC\u200C\u0634\u0648\u062F"), /* @__PURE__ */ React.createElement(AddExpenseForm, { cats: CAT_GROCERY, onSave: (lf) => addItem("groceries", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addOther" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F4E6} \u0633\u0627\u06CC\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627", onClose: closeModal }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_OTHER, onSave: (lf) => addItem("other", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addIncome" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F4C8} \u062B\u0628\u062A \u062F\u0631\u0622\u0645\u062F", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.accent + "11", border: `1px solid ${DARK.accent}22`, borderRadius: 8, padding: "7px 12px", marginBottom: 12, fontSize: 11, color: DARK.accent } }, "\u{1F4A1} \u0627\u06CC\u0646 \u062F\u0631\u0622\u0645\u062F \u0628\u0647 \xAB\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647\xBB \u0627\u0636\u0627\u0641\u0647 \u0645\u06CC\u200C\u0634\u0648\u062F"), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
+  } }, olLang === "en" ? "\u2713 Save" : "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addBills" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F4A1} Add Bill" : "\u{1F4A1} \u062B\u0628\u062A \u0628\u0644 (\u0642\u0628\u0636)", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_BILLS, onSave: (lf) => addItem("bills", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addInstall" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F4B3} Add Installment" : "\u{1F4B3} \u062B\u0628\u062A \u0642\u0633\u0637", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_INSTALL, onSave: (lf) => addItem("installments", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addInsurance" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F6E1}\uFE0F Add Insurance" : "\u{1F6E1}\uFE0F \u062B\u0628\u062A \u0628\u06CC\u0645\u0647", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_INSURANCE, onSave: (lf) => addItem("insurance", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addGrocery" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F6D2} Add Grocery" : "\u{1F6D2} \u062E\u0648\u0631\u0627\u06A9\u06CC \u0648 \u0648\u0633\u0627\u06CC\u0644 \u062E\u0648\u0646\u0647", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.green + "11", border: `1px solid ${DARK.green}22`, borderRadius: 8, padding: "8px 12px", marginBottom: 12, fontSize: 12, color: DARK.green } }, "\u{1F4A1} \u0627\u06CC\u0646 \u0647\u0632\u06CC\u0646\u0647 \u0627\u0632 \u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC (", fmt(totalBudget), " \u0627\u0641\u063A) \u06A9\u0633\u0631 \u0645\u06CC\u200C\u0634\u0648\u062F"), /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_GROCERY, onSave: (lf) => addItem("groceries", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addOther" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F4E6} Other Expenses" : "\u{1F4E6} \u0633\u0627\u06CC\u0631 \u0647\u0632\u06CC\u0646\u0647\u200C\u0647\u0627", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement(AddExpenseForm, { lang: olLang, cats: CAT_OTHER, onSave: (lf) => addItem("other", __spreadValues({ id: uid() }, lf)), onCancel: closeModal, myName, spouseName })), modal === "addIncome" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F4C8} Add Income" : "\u{1F4C8} \u062B\u0628\u062A \u062F\u0631\u0622\u0645\u062F", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.accent + "11", border: `1px solid ${DARK.accent}22`, borderRadius: 8, padding: "7px 12px", marginBottom: 12, fontSize: 11, color: DARK.accent } }, "\u{1F4A1} \u0627\u06CC\u0646 \u062F\u0631\u0622\u0645\u062F \u0628\u0647 \xAB\u0628\u0627\u0642\u06CC\u200C\u0645\u0627\u0646\u062F\u0647\xBB \u0627\u0636\u0627\u0641\u0647 \u0645\u06CC\u200C\u0634\u0648\u062F"), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", { style: { color: DARK.sub, fontSize: 11, display: "block", marginBottom: 5, textTransform: "uppercase" } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
     flex: 1,
     padding: "6px 2px",
     borderRadius: 8,
@@ -846,7 +866,7 @@ function OLApp() {
     const rawAmt = Number(form.amount);
     const afnAmt = Math.round(toAFN(rawAmt, form.currency || "AFN"));
     addItem("incomes", { id: uid(), amount: rawAmt, amountAFN: afnAmt, currency: form.currency || "AFN", desc: form.desc, by: form.by || myName, date: form.date || today() });
-  } }, "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addSaving" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F3E6} \u062B\u0628\u062A \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 12, marginBottom: 6 } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
+  } }, olLang === "en" ? "\u2713 Save" : "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addSaving" && /* @__PURE__ */ React.createElement(OLModal, { title: olLang === "en" ? "\u{1F3E6} Add Saving" : "\u{1F3E6} \u062B\u0628\u062A \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632", onClose: closeModal, dir: olDir }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 12, marginBottom: 6 } }, olLang === "en" ? "Currency" : "\u0648\u0627\u062D\u062F \u067E\u0648\u0644"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, CURRENCIES.map((c) => /* @__PURE__ */ React.createElement("button", { key: c.id, onClick: () => fv("currency", c.id), style: {
     flex: 1,
     padding: "8px 4px",
     borderRadius: 8,
@@ -863,7 +883,7 @@ function OLApp() {
     const amt = Number(form.amount);
     const amtAFN = toAFN(amt, cur);
     addItem("savings", { id: uid(), amount: amt, currency: cur, amountAFN: amtAFN, desc: form.desc, by: "\u0645\u0634\u062A\u0631\u06A9", date: form.date || today() });
-  } }, "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addGoal" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F3AF} \u0647\u062F\u0641 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632 \u062C\u062F\u06CC\u062F", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 8 } }, form.icon || "\u{1F3AF}"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, "\u0644\u0648\u06AF\u0648 \u0631\u0648 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646:")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14, justifyContent: "center" } }, ["\u{1F697}", "\u{1F3E0}", "\u2708\uFE0F", "\u{1F48D}", "\u{1F4F1}", "\u{1F393}", "\u{1F48A}", "\u{1F389}", "\u{1F6CB}\uFE0F", "\u{1F4B0}", "\u{1F3D6}\uFE0F", "\u{1F3B8}", "\u26BD", "\u{1F3AF}", "\u{1F5A5}\uFE0F", "\u{1F476}"].map((ic) => /* @__PURE__ */ React.createElement("button", { key: ic, onClick: () => fv("icon", ic), style: {
+  } }, olLang === "en" ? "\u2713 Save" : "\u2713 \u0630\u062E\u06CC\u0631\u0647"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, ghost: true, color: DARK.sub, onClick: closeModal }, olLang === "en" ? "Cancel" : "\u0627\u0646\u0635\u0631\u0627\u0641"))), modal === "addGoal" && /* @__PURE__ */ React.createElement(OLModal, { title: "\u{1F3AF} \u0647\u062F\u0641 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632 \u062C\u062F\u06CC\u062F", onClose: closeModal }, /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 8 } }, form.icon || "\u{1F3AF}"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, "\u0644\u0648\u06AF\u0648 \u0631\u0648 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646:")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14, justifyContent: "center" } }, ["\u{1F697}", "\u{1F3E0}", "\u2708\uFE0F", "\u{1F48D}", "\u{1F4F1}", "\u{1F393}", "\u{1F48A}", "\u{1F389}", "\u{1F6CB}\uFE0F", "\u{1F4B0}", "\u{1F3D6}\uFE0F", "\u{1F3B8}", "\u26BD", "\u{1F3AF}", "\u{1F5A5}\uFE0F", "\u{1F476}"].map((ic) => /* @__PURE__ */ React.createElement("button", { key: ic, onClick: () => fv("icon", ic), style: {
     width: 44,
     height: 44,
     borderRadius: 10,
@@ -1658,7 +1678,7 @@ const OURLIFE_CATS = [
   { id: "grocery", icon: "\u{1F6D2}", label: "\u062E\u0631\u06CC\u062F \u062E\u0648\u0646\u0647" },
   { id: "bills", icon: "\u{1F4A1}", label: "\u0642\u0628\u0636\u200C\u0647\u0627" },
   { id: "saving", icon: "\u{1F3E6}", label: "\u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632" },
-  { id: "other", icon: "\u{1F4E6}", label: "\u0633\u0627\u06CC\u0631" }
+  { id: "other", icon: "\u{1F4E6}", label: "\u0633\u0627\u06CC\u0631", en: "Other" }
 ];
 function OurLifePanel({ state, update, theme, lang }) {
   const isDark = theme !== "light";
@@ -1890,7 +1910,7 @@ function SettingsPanel({ state, update, t, lang, showToast, theme }) {
     setResetErr("");
   } }, t.cancel)))), /* @__PURE__ */ React.createElement("div", { style: cardStyle }, secLabel("\u{1F510} " + t.passSection), /* @__PURE__ */ React.createElement(Input, { theme, label: t.currentPass, type: "password", placeholder: "\u2022\u2022\u2022\u2022", value: cur, onChange: (e) => setCur(e.target.value) }), /* @__PURE__ */ React.createElement(Input, { theme, label: t.newPass, type: "password", placeholder: "\u2022\u2022\u2022\u2022", value: nw, onChange: (e) => setNw(e.target.value) }), /* @__PURE__ */ React.createElement(Input, { theme, label: t.confirmPass, type: "password", placeholder: "\u2022\u2022\u2022\u2022", value: cf, onChange: (e) => setCf(e.target.value), onKeyDown: (e) => e.key === "Enter" && changePass() }), passMsg && /* @__PURE__ */ React.createElement("div", { style: { padding: "8px 12px", borderRadius: 8, marginBottom: 12, fontSize: 12, background: passMsg.ok ? "#2ea04322" : "#c0392b22", color: passMsg.ok ? "#2ea043" : "#c0392b", border: `1px solid ${passMsg.ok ? "#2ea04344" : "#c0392b44"}` } }, passMsg.text), /* @__PURE__ */ React.createElement(BBBtn, { full: true, onClick: changePass }, t.save))));
 }
-function BBApp() {
+function BBApp({ currentUser }) {
   var _a;
   const [state, setState] = React.useState(DEFAULT_STATE);
   const [loading, setLoading] = React.useState(true);
@@ -1966,6 +1986,32 @@ function BBApp() {
     }, 8e3);
     return () => clearInterval(poll);
   }, []);
+  // Presence: write current user's heartbeat every 20s, read others
+  const [onlineUsers, setOnlineUsers] = React.useState({});
+  React.useEffect(() => {
+    if (!currentUser) return;
+    const writePresence = () => {
+      update((s) => {
+        const presence = __spreadValues({}, s.presence || {});
+        presence[currentUser] = new Date().toISOString();
+        return __spreadProps(__spreadValues({}, s), { presence });
+      });
+    };
+    writePresence();
+    const interval = setInterval(writePresence, 20000);
+    return () => clearInterval(interval);
+  }, [currentUser]);
+  React.useEffect(() => {
+    const now = Date.now();
+    const presence = state.presence || {};
+    const online = {};
+    for (const [user, ts] of Object.entries(presence)) {
+      if (user !== currentUser && ts && (now - new Date(ts).getTime()) < 120000) {
+        online[user] = ts;
+      }
+    }
+    setOnlineUsers(online);
+  }, [state.presence, currentUser]);
   const persist = React.useCallback((newState) => {
     const json = JSON.stringify(newState);
     if (json === lastSaved.current) return;
@@ -2154,7 +2200,7 @@ function BBApp() {
       return;
     }
     if (window.__goBackToShell) window.__goBackToShell();
-  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }))), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
+  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }), currentUser && /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "#64748b", marginRight: 4 } }, "\u{1F464} ", currentUser))), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: i,
@@ -2519,21 +2565,40 @@ function AppShell() {
   const [pw, setPw] = React.useState("");
   const [err, setErr] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+  const [currentUser, setCurrentUser] = React.useState(() => {
+    try { return localStorage.getItem("ourlife_current_user") || ""; } catch(e) { return ""; }
+  });
+  // NEW: which app is selected (waiting for password)
+  const [selectedApp, setSelectedApp] = React.useState(null);
+  const [pwOk, setPwOk] = React.useState(false);
+  const [pendingApp, setPendingApp] = React.useState(null);
+
   const handleBack = React.useCallback(() => {
     setAuthed(false);
     setActiveApp(null);
+    setSelectedApp(null);
     setPw("");
     setErr("");
     setLoading(false);
+    setCurrentUser("");
+    setPwOk(false);
+    setPendingApp(null);
+    try { localStorage.removeItem("ourlife_current_user"); } catch(e) {}
   }, []);
   React.useEffect(() => {
     window.__goBackToShell = handleBack;
-    return () => {
-      window.__goBackToShell = null;
-    };
+    return () => { window.__goBackToShell = null; };
   }, [handleBack]);
-  const handleLogin = async (appId) => {
-    if (loading || !pw) return;
+
+  const handleSelectApp = (appId) => {
+    setSelectedApp(appId);
+    setPw("");
+    setErr("");
+  };
+
+  const handleLogin = async () => {
+    const appId = selectedApp;
+    if (loading || !pw || !appId) return;
     setLoading(true);
     const storedPw = getAppPw(appId);
     const ok = await checkAppPw(pw, storedPw);
@@ -2541,8 +2606,18 @@ function AppShell() {
       if (!storedPw.startsWith("sha256:")) {
         hashAppPw(pw).then((h) => saveAppPw(appId, h));
       }
+      if (appId === "ourlife") {
+        setPwOk(true);
+        setPendingApp(appId);
+        setPw("");
+        setErr("");
+        setLoading(false);
+        return;
+      }
+      // bazaarbook goes straight in
       setAuthed(true);
       setActiveApp(appId);
+      setSelectedApp(null);
       setPw("");
       setErr("");
     } else {
@@ -2550,6 +2625,91 @@ function AppShell() {
     }
     setLoading(false);
   };
+
+  const handleSelectUser = (userName) => {
+    try { localStorage.setItem("ourlife_current_user", userName); } catch(e) {}
+    setCurrentUser(userName);
+    setAuthed(true);
+    setActiveApp(pendingApp);
+    setSelectedApp(null);
+    setPwOk(false);
+    setPendingApp(null);
+  };
+
+  // User selection screen after password ok (ourlife)
+  if (pwOk && pendingApp === "ourlife") {
+    const names = (() => {
+      try {
+        const d = JSON.parse(localStorage.getItem("ourlife_data") || "{}");
+        return { my: (d.settings && d.settings.myName) || "\u0645\u0647\u062F\u06CC", spouse: (d.settings && d.settings.spouseName) || "\u0644\u06CC\u062F\u0627" };
+      } catch(e) { return { my: "\u0645\u0647\u062F\u06CC", spouse: "\u0644\u06CC\u062F\u0627" }; }
+    })();
+    return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,sans-serif" } },
+      /* @__PURE__ */ React.createElement("div", { style: { textAlign: "center", width: "90%", maxWidth: 340 } },
+        /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 12 } }, "\u{1F464}"),
+        /* @__PURE__ */ React.createElement("h2", { style: { color: "#e2e8f0", fontSize: 20, marginBottom: 6 } }, "\u0634\u0645\u0627 \u06A9\u06CC \u0647\u0633\u062A\u06CC\u062F\u061F"),
+        /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 12, marginBottom: 28 } }, "Who are you?"),
+        /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 14, justifyContent: "center" } },
+          [names.my, names.spouse].map((name) =>
+            /* @__PURE__ */ React.createElement("button", { key: name, onClick: () => handleSelectUser(name), style: {
+              background: "#111827", border: "2px solid #4fc3f744", borderRadius: 16,
+              padding: "20px 28px", cursor: "pointer", color: "#4fc3f7",
+              fontWeight: 700, fontSize: 16, transition: "all 0.2s", fontFamily: "Tahoma,sans-serif"
+            },
+            onMouseOver: (e) => e.currentTarget.style.borderColor = "#4fc3f7",
+            onMouseOut: (e) => e.currentTarget.style.borderColor = "#4fc3f744"
+            },
+            /* @__PURE__ */ React.createElement("div", { style: { fontSize: 36, marginBottom: 8 } }, name === names.my ? "\u{1F466}" : "\u{1F467}"),
+            name
+          ))
+        ),
+        /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: { marginTop: 24, background: "none", border: "1px solid #1e2a3a", color: "#64748b", borderRadius: 10, padding: "8px 20px", cursor: "pointer", fontSize: 12 } }, "\u2190 \u0628\u0631\u06AF\u0634\u062A")
+      )
+    );
+  }
+
+  // Password screen after app selected
+  if (selectedApp && !authed) {
+    const isOL = selectedApp === "ourlife";
+    const accentColor = isOL ? "#4fc3f7" : "#f0a500";
+    const appIcon = isOL ? "\u{1F3E0}" : "\u{1F4D2}";
+    const appName = isOL ? "\u0632\u0646\u062F\u06AF\u06CC \u0645\u0627" : "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631";
+    return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,'Segoe UI',sans-serif" } },
+      /* @__PURE__ */ React.createElement("div", { style: { width: "90%", maxWidth: 320, textAlign: "center" } },
+        /* @__PURE__ */ React.createElement("div", { style: { fontSize: 52, marginBottom: 10 } }, appIcon),
+        /* @__PURE__ */ React.createElement("h2", { style: { color: accentColor, margin: "0 0 4px", fontSize: 20 } }, appName),
+        /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 12, marginBottom: 24 } }, "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F"),
+        /* @__PURE__ */ React.createElement("input", {
+          type: "password",
+          placeholder: "\u{1F512} \u0631\u0645\u0632 \u0639\u0628\u0648\u0631",
+          value: pw,
+          autoFocus: true,
+          onChange: (e) => { setPw(e.target.value); setErr(""); },
+          onKeyDown: (e) => { if (e.key === "Enter" && pw) handleLogin(); },
+          style: {
+            width: "100%", padding: "12px 16px", borderRadius: 12,
+            border: err ? "1px solid #f87171" : `1px solid ${accentColor}44`,
+            background: "#111827", color: "#e2e8f0", fontSize: 16,
+            outline: "none", textAlign: "center", boxSizing: "border-box",
+            letterSpacing: 4, transition: "border 0.2s", marginBottom: 8
+          }
+        }),
+        err && /* @__PURE__ */ React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginBottom: 10 } }, err),
+        /* @__PURE__ */ React.createElement("button", {
+          onClick: handleLogin,
+          disabled: loading || !pw,
+          style: {
+            width: "100%", padding: "12px", borderRadius: 12,
+            background: !pw ? "#1e2a3a" : accentColor,
+            color: !pw ? "#64748b" : "#0a0f1a",
+            border: "none", cursor: !pw ? "not-allowed" : "pointer",
+            fontWeight: 700, fontSize: 15, transition: "all 0.2s", marginBottom: 12
+          }
+        }, loading ? "\u23F3..." : "\u0648\u0631\u0648\u062F"),
+        /* @__PURE__ */ React.createElement("button", { onClick: () => setSelectedApp(null), style: { background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 12 } }, "\u2190 \u0628\u0631\u06AF\u0634\u062A")
+      )
+    );
+  }
   if (authed && activeApp === "ourlife") {
     return /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } }, /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: {
       background: "rgba(30,42,58,0.92)",
@@ -2561,10 +2721,10 @@ function AppShell() {
       cursor: "pointer",
       fontSize: 12,
       fontWeight: 700
-    } }, "\u2190 \u0628\u0627\u0632\u06AF\u0634\u062A \xB7 \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")), /* @__PURE__ */ React.createElement(OLApp, null));
+    } }, "\u2190 Back \xB7 Our Life")), /* @__PURE__ */ React.createElement(OLApp, { currentUser }));
   }
   if (authed && activeApp === "bazaarbook") {
-    return /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } }, /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: {
+    return /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } }, /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: {
       background: "rgba(30,39,48,0.92)",
       backdropFilter: "blur(4px)",
       border: "1px solid #f0a50044",
@@ -2574,67 +2734,30 @@ function AppShell() {
       cursor: "pointer",
       fontSize: 12,
       fontWeight: 700
-    } }, "\u2190 \u0628\u0627\u0632\u06AF\u0634\u062A \xB7 \u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631")), /* @__PURE__ */ React.createElement(BBApp, null));
+    } }, "\u2190 Back \xB7 Bazaar Book")), /* @__PURE__ */ React.createElement(BBApp, { currentUser })));
   }
-  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "90%", maxWidth: 360, textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 32 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 8 } }, "\u{1F5C2}\uFE0F"), /* @__PURE__ */ React.createElement("h2", { style: { color: "#e2e8f0", margin: "0 0 4px", fontSize: 22 } }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0628\u0631\u0646\u0627\u0645\u0647"), /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 13 } }, "\u0631\u0645\u0632 \u0647\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0631\u0627 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F")), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 20 } }, /* @__PURE__ */ React.createElement(
-    "input",
-    {
-      type: "password",
-      placeholder: "\u{1F512} \u0631\u0645\u0632 \u0639\u0628\u0648\u0631",
-      value: pw,
-      onChange: (e) => {
-        setPw(e.target.value);
-        setErr("");
-      },
-      onKeyDown: (e) => {
-        if (e.key === "Enter" && pw) handleLogin("ourlife");
-      },
-      style: {
-        width: "100%",
-        padding: "12px 16px",
-        borderRadius: 12,
-        border: err ? "1px solid #f87171" : "1px solid #1e2a3a",
-        background: "#111827",
-        color: "#e2e8f0",
-        fontSize: 16,
-        outline: "none",
-        textAlign: "center",
-        boxSizing: "border-box",
-        letterSpacing: 4,
-        transition: "border 0.2s"
-      }
-    }
-  ), err && /* @__PURE__ */ React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginTop: 6 } }, err)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement(
+  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "90%", maxWidth: 360, textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 32 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 8 } }, "\u{1F5C2}\uFE0F"), /* @__PURE__ */ React.createElement("h2", { style: { color: "#e2e8f0", margin: "0 0 4px", fontSize: 22 } }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0628\u0631\u0646\u0627\u0645\u0647"), /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 13 } }, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u0648\u0631\u062F \u0646\u0638\u0631 \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement(
     "button",
     {
-      onClick: () => handleLogin("ourlife"),
-      disabled: loading || !pw,
+      onClick: () => handleSelectApp("ourlife"),
       style: {
         padding: "16px 20px",
         borderRadius: 16,
         border: "2px solid #4fc3f733",
         background: "#111827",
-        cursor: !pw ? "not-allowed" : "pointer",
+        cursor: "pointer",
         display: "flex",
         alignItems: "center",
         gap: 14,
-        opacity: !pw ? 0.5 : 1,
         outline: "none",
         transition: "border-color 0.2s, transform 0.1s",
-        textAlign: "right"
+        textAlign: "right",
+        width: "100%"
       },
-      onMouseOver: (e) => {
-        if (pw) e.currentTarget.style.borderColor = "#4fc3f7";
-      },
-      onMouseOut: (e) => {
-        e.currentTarget.style.borderColor = "#4fc3f733";
-      },
-      onMouseDown: (e) => {
-        if (pw) e.currentTarget.style.transform = "scale(0.98)";
-      },
-      onMouseUp: (e) => {
-        e.currentTarget.style.transform = "scale(1)";
-      }
+      onMouseOver: (e) => { e.currentTarget.style.borderColor = "#4fc3f7"; },
+      onMouseOut: (e) => { e.currentTarget.style.borderColor = "#4fc3f733"; },
+      onMouseDown: (e) => { e.currentTarget.style.transform = "scale(0.98)"; },
+      onMouseUp: (e) => { e.currentTarget.style.transform = "scale(1)"; }
     },
     /* @__PURE__ */ React.createElement("span", { style: { fontSize: 38 } }, "\u{1F3E0}"),
     /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 15 } }, "\u0632\u0646\u062F\u06AF\u06CC \u0645\u0627"), /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC \u0632\u0646\u062F\u06AF\u06CC \u062F\u0648\u0646\u0641\u0631\u0647")),
@@ -2642,39 +2765,30 @@ function AppShell() {
   ), /* @__PURE__ */ React.createElement(
     "button",
     {
-      onClick: () => handleLogin("bazaarbook"),
-      disabled: loading || !pw,
+      onClick: () => handleSelectApp("bazaarbook"),
       style: {
         padding: "16px 20px",
         borderRadius: 16,
         border: "2px solid #f0a50033",
         background: "#111827",
-        cursor: !pw ? "not-allowed" : "pointer",
+        cursor: "pointer",
         display: "flex",
         alignItems: "center",
         gap: 14,
-        opacity: !pw ? 0.5 : 1,
         outline: "none",
         transition: "border-color 0.2s, transform 0.1s",
-        textAlign: "right"
+        textAlign: "right",
+        width: "100%"
       },
-      onMouseOver: (e) => {
-        if (pw) e.currentTarget.style.borderColor = "#f0a500";
-      },
-      onMouseOut: (e) => {
-        e.currentTarget.style.borderColor = "#f0a50033";
-      },
-      onMouseDown: (e) => {
-        if (pw) e.currentTarget.style.transform = "scale(0.98)";
-      },
-      onMouseUp: (e) => {
-        e.currentTarget.style.transform = "scale(1)";
-      }
+      onMouseOver: (e) => { e.currentTarget.style.borderColor = "#f0a500"; },
+      onMouseOut: (e) => { e.currentTarget.style.borderColor = "#f0a50033"; },
+      onMouseDown: (e) => { e.currentTarget.style.transform = "scale(0.98)"; },
+      onMouseUp: (e) => { e.currentTarget.style.transform = "scale(1)"; }
     },
     /* @__PURE__ */ React.createElement("span", { style: { fontSize: 38 } }, "\u{1F4D2}"),
     /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 15 } }, "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631"), /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, "\u062D\u0633\u0627\u0628\u200C\u0648\u06A9\u062A\u0627\u0628 \u0648 \u0628\u0648\u062F\u062C\u0647 \u0628\u0627\u0632\u0627\u0631")),
     /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a50044", fontSize: 18 } }, "\u2190")
-  )), /* @__PURE__ */ React.createElement("p", { style: { color: "#334155", fontSize: 11, marginTop: 28 } }, "\u0647\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u062C\u062F\u0627\u06AF\u0627\u0646\u0647 \u062F\u0627\u0631\u062F \xB7 v2.2")));
+  )), /* @__PURE__ */ React.createElement("p", { style: { color: "#334155", fontSize: 11, marginTop: 28 } }, "\u0647\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u062C\u062F\u0627\u06AF\u0627\u0646\u0647 \u062F\u0627\u0631\u062F \xB7 v2.3")));
 }
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(AppShell));
