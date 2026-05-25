@@ -463,38 +463,17 @@ function OLApp({ currentUser }) {
     }).catch(() => setLoading(false));
   }, []);
   React.useEffect(() => {
-    const ARRAY_KEYS = ["bills", "installments", "insurance", "groceries", "other", "incomes", "savings", "savingGoals", "budgetHistory"];
     const poll = setInterval(async () => {
       try {
         const { data, updated_at } = await loadRemote();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
-          setState((prev) => {
-            const merged = __spreadValues(__spreadValues({}, DEFAULT), prev);
-            for (const key of ARRAY_KEYS) {
-              const localArr = prev[key] || [];
-              const remoteArr = data[key] || [];
-              const localIds = new Set(localArr.map((i) => i.id));
-              const newItems = remoteArr.filter((i) => !localIds.has(i.id));
-              merged[key] = [...localArr, ...newItems];
-            }
-            merged.settings = data.settings || prev.settings;
-            // Merge presence: keep newest timestamp per user
-            const localPresence = prev.presence || {};
-            const remotePresence = data.presence || {};
-            const mergedPresence = __spreadValues(__spreadValues({}, remotePresence), localPresence);
-            for (const [u, ts] of Object.entries(remotePresence)) {
-              if (!localPresence[u] || new Date(ts) > new Date(localPresence[u])) mergedPresence[u] = ts;
-            }
-            merged.presence = mergedPresence;
-            delete merged.totalBudget;
-            lastSaved.current = JSON.stringify(merged);
-            try {
-              localStorage.setItem(OL_LS_KEY, JSON.stringify(merged));
-            } catch (e) {
-            }
-            return merged;
-          });
+          setState((prev) => __spreadValues(__spreadValues({}, prev), data));
+          lastSaved.current = JSON.stringify(data);
+          try {
+            localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
+          } catch (e) {
+          }
           setSync("synced");
           setTimeout(() => setSync("idle"), 2e3);
         }
@@ -508,7 +487,7 @@ function OLApp({ currentUser }) {
   React.useEffect(() => {
     if (!currentUser) return;
     const writePresence = () => {
-      update((s) => {
+      setState((s) => {
         const presence = __spreadValues({}, s.presence || {});
         presence[currentUser] = new Date().toISOString();
         return __spreadProps(__spreadValues({}, s), { presence });
