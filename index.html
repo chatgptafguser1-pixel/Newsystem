@@ -171,6 +171,14 @@ const loadRemote = async () => {
       const data = typeof rows[0].value === "string" ? JSON.parse(rows[0].value) : rows[0].value;
       return { data, updated_at: rows[0].updated_at };
     }
+    // row doesn't exist yet - create it
+    if (Array.isArray(rows) && rows.length === 0) {
+      await fetch(OL_SB_URL + "/rest/v1/kv_store", {
+        method: "POST",
+        headers: OL_SB_HEADERS,
+        body: JSON.stringify({ key: "ourlife", value: "{}", updated_at: new Date().toISOString() })
+      });
+    }
   } catch (e) {}
   return { data: {}, updated_at: null };
 };
@@ -179,13 +187,15 @@ const saveRemote = async (data) => {
   try {
     const value = JSON.stringify(data);
     const ts = new Date().toISOString();
-    // upsert
-    await fetch(OL_SB_URL + "/rest/v1/kv_store?on_conflict=key", {
+    // upsert - insert or update if key exists
+    const upsertRes = await fetch(OL_SB_URL + "/rest/v1/kv_store", {
       method: "POST",
       headers: { ...OL_SB_HEADERS, "Prefer": "resolution=merge-duplicates,return=representation" },
       body: JSON.stringify({ key: "ourlife", value, updated_at: ts })
     });
-    // get real server updated_at
+    const upsertRows = await upsertRes.json();
+    if (upsertRows && upsertRows[0] && upsertRows[0].updated_at) return upsertRows[0].updated_at;
+    // fallback: get updated_at
     const res2 = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=updated_at", { headers: OL_SB_HEADERS });
     const rows2 = await res2.json();
     if (rows2 && rows2[0]) return rows2[0].updated_at;
