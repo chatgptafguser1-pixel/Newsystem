@@ -140,8 +140,8 @@ const olSbFetch = async (method, body) => {
     },
     body: body ? JSON.stringify(body) : void 0
   });
-
-  return await res.json().catch(() => null);
+  if (method === "PATCH") return true;
+  return await res.json();
 };
 const loadRemote = async () => {
   try {
@@ -152,7 +152,7 @@ const loadRemote = async () => {
   return { data: {}, updated_at: null };
 };
 const saveRemote = async (data) => {
-  const ts = (new Date()).toISOString();
+  const ts = (/* @__PURE__ */ new Date()).toISOString();
   try {
     localStorage.setItem(OL_LS_KEY, JSON.stringify(data));
   } catch (e) {
@@ -440,21 +440,19 @@ function OLApp({ currentUser }) {
   const [toast, setToast] = React.useState(null);
   const [sync, setSync] = React.useState("idle");
   const syncTimer = React.useRef(null);
-  const lastSaved = React.useRef("{}");
   const lastUpdatedAt = React.useRef(null);
+  const pendingSave = React.useRef(false);
   React.useEffect(() => {
     const local = loadLocal();
     if (local && Object.keys(local).length > 0) {
       const { presence: _p, ...localClean } = local;
       setState((prev) => __spreadValues(__spreadValues(__spreadValues({}, DEFAULT), prev), localClean));
-      lastSaved.current = JSON.stringify(localClean);
       setLoading(false);
     }
     loadRemote().then(({ data, updated_at }) => {
       if (data && Object.keys(data).length > 0) {
         const { presence: _p, ...dataClean } = data;
         setState((prev) => __spreadValues(__spreadValues(__spreadValues({}, DEFAULT), prev), dataClean));
-        lastSaved.current = JSON.stringify(dataClean);
         lastUpdatedAt.current = updated_at;
         try {
           localStorage.setItem(OL_LS_KEY, JSON.stringify(dataClean));
@@ -466,13 +464,13 @@ function OLApp({ currentUser }) {
   }, []);
   React.useEffect(() => {
     const poll = setInterval(async () => {
+      if (pendingSave.current) return;
       try {
         const { data, updated_at } = await loadRemote();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
           const { presence: _p, ...dataClean } = data;
           setState((prev) => __spreadValues(__spreadValues({}, prev), dataClean));
-          lastSaved.current = JSON.stringify(dataClean);
           try {
             localStorage.setItem(OL_LS_KEY, JSON.stringify(dataClean));
           } catch (e) {
@@ -513,22 +511,16 @@ function OLApp({ currentUser }) {
   }, [state.presence, currentUser]);
   const persist = React.useCallback((ns) => {
     const { presence: _p, ...nsClean } = ns;
-    const json = JSON.stringify(nsClean);
-    if (json === lastSaved.current) return;
+    pendingSave.current = true;
     setSync("syncing");
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
-      try {
-        const ts = await saveRemote(nsClean);
-        lastSaved.current = json;
-        if (ts) lastUpdatedAt.current = ts;
-        setSync("synced");
-        setTimeout(() => setSync("idle"), 2e3);
-      } catch (e) {
-        setSync("error");
-        setTimeout(() => setSync("idle"), 4000);
-      }
-    }, 600);
+      const ts = await saveRemote(nsClean);
+      if (ts) lastUpdatedAt.current = ts;
+      pendingSave.current = false;
+      setSync("synced");
+      setTimeout(() => setSync("idle"), 2e3);
+    }, 1000);
   }, []);
   const update = React.useCallback((fn) => {
     setState((prev) => {
