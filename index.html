@@ -139,10 +139,15 @@ const ARRAY_KEYS = ["budgetHistory","bills","installments","insurance","grocerie
 function mergeStates(local, remote) {
   if (!local || Object.keys(local).length === 0) return remote;
   if (!remote || Object.keys(remote).length === 0) return local;
+  // If remote has a reset timestamp newer than local, remote wins completely
+  if (remote._resetAt && (!local._resetAt || remote._resetAt > local._resetAt)) return remote;
   const merged = Object.assign({}, remote);
   for (const key of ARRAY_KEYS) {
     const localArr = local[key] || [];
     const remoteArr = remote[key] || [];
+    // If remote array is empty but local isn't, check reset flag
+    // Remote empty = intentional reset, don't restore from local
+    if (remoteArr.length === 0) { merged[key] = []; continue; }
     const map = {};
     for (const item of remoteArr) map[item.id] = item;
     for (const item of localArr) {
@@ -150,9 +155,7 @@ function mergeStates(local, remote) {
     }
     merged[key] = Object.values(map).sort((a,b) => (a.date||"") > (b.date||"") ? -1 : 1);
   }
-  // settings: prefer most recently changed (remote wins)
   merged.settings = Object.assign({}, local.settings || {}, remote.settings || {});
-  merged.totalBudget = Math.max(local.totalBudget || 0, remote.totalBudget || 0);
   return merged;
 }
 const OL_SB_HEADERS = {
@@ -1118,7 +1121,7 @@ function ResetData({ state, update, showToast }) {
       setPw("");
       return;
     }
-    update(() => __spreadProps(__spreadValues({}, DEFAULT), { password: state.password, settings: state.settings }));
+    update(() => __spreadProps(__spreadValues({}, DEFAULT), { password: state.password, settings: state.settings, _resetAt: new Date().toISOString() }));
     setStep(0);
     setPw("");
     setErr("");
