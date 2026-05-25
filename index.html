@@ -646,7 +646,7 @@ function OLApp({ currentUser }) {
         if (tab !== "dashboard") { setTab("dashboard"); return; }
         if (window.__goBackToShell) window.__goBackToShell();
       }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"),
-      /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? "\u{1F3E0} Our Life" : "\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627")
+      /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? ("\u{1F3E0} " + myName) : ("\u{1F3E0} \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627"))
     ),
     /* @__PURE__ */ React.createElement(SyncDot, { status: sync })
   ),
