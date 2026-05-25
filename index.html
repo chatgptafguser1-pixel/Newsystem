@@ -571,24 +571,33 @@ function OLApp({ currentUser }) {
     document.documentElement.lang = lang;
     document.body.dir = dir;
   }, [state.settings && state.settings.lang]);
+  const [debugInfo, setDebugInfo] = React.useState("");
   const forceSync = async () => {
+    setDebugInfo("در حال دریافت...");
     try {
-      const { data, updated_at } = await loadRemote();
-      console.log("[ForceSync] server updated_at:", updated_at);
-      console.log("[ForceSync] lastUpdatedAt.current:", lastUpdatedAt.current);
-      console.log("[ForceSync] data keys:", data ? Object.keys(data) : "null");
-      console.log("[ForceSync] budgetHistory length:", data && data.budgetHistory ? data.budgetHistory.length : "N/A");
-      if (data && Object.keys(data).length > 0) {
-        setState(data);
-        lastSaved.current = JSON.stringify(data);
-        lastUpdatedAt.current = updated_at;
-        try { localStorage.setItem(OL_LS_KEY, JSON.stringify(data)); } catch(e) {}
-        showToast("✓ سینک شد از سرور");
-      } else {
-        showToast("⚠️ داده‌ای از سرور نیامد", false);
+      const rawRes = await fetch("https://limahworker-c366.m-mahdi-mesbah2018.workers.dev?id=ourlife");
+      const rawText = await rawRes.text();
+      setDebugInfo("RAW: " + rawText.slice(0, 300));
+      let parsed;
+      try { parsed = JSON.parse(rawText); } catch(e) {
+        setDebugInfo("JSON parse error: " + e.message + " | raw: " + rawText.slice(0, 200));
+        return;
       }
+      const rows = Array.isArray(parsed) ? parsed : [parsed];
+      const row = rows[0];
+      if (!row || !row.data || Object.keys(row.data).length === 0) {
+        setDebugInfo("داده خالی. raw: " + rawText.slice(0, 200));
+        showToast("⚠️ داده‌ای از سرور نیامد", false);
+        return;
+      }
+      setState(row.data);
+      lastSaved.current = JSON.stringify(row.data);
+      lastUpdatedAt.current = row.updated_at;
+      try { localStorage.setItem(OL_LS_KEY, JSON.stringify(row.data)); } catch(e) {}
+      setDebugInfo("OK | updated_at: " + row.updated_at + " | budgetHistory: " + (row.data.budgetHistory||[]).length);
+      showToast("✓ سینک شد از سرور");
     } catch(e) {
-      console.error("[ForceSync] error:", e);
+      setDebugInfo("ERROR: " + e.message);
       showToast("❌ خطا: " + e.message, false);
     }
   };
@@ -747,7 +756,7 @@ function OLApp({ currentUser }) {
       onAdd: () => openModal("addToGoal", { goalId: goal.id, goalName: goal.name }),
       onDelete: () => update((s) => __spreadProps(__spreadValues({}, s), { savingGoals: (s.savingGoals || []).filter((g) => g.id !== goal.id) }))
     }
-  )), (state.savings || []).length > 0 && /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.green, fontWeight: 700, fontSize: 13, marginBottom: 10 } }, olLang === "en" ? "\u{1F4DD} Savings History" : "\u{1F4DD} \u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632"), [...state.savings || []].reverse().slice(0, 10).map((item) => /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: "\u{1F49A}", label: item.desc || "\u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632", sub: `${item.by || "\u0645\u0634\u062A\u0631\u06A9"} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.green, onDelete: () => delItem("savings", item.id) })))), tab === "settings" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.yellow }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.yellow, fontWeight: 700, fontSize: 13, marginBottom: 10 } }, "\u{1F527} Debug / تست سینک"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, color: DARK.accent, style: { marginBottom: 8 }, onClick: forceSync }, "\u{1F504} دریافت از سرور الان"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub } }, "lastUpdatedAt: ", lastUpdatedAt.current || "null"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub } }, "budgetHistory: ", (state.budgetHistory || []).length, " مورد"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub } }, "bills: ", (state.bills || []).length, " مورد")), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13, marginBottom: 14 } }, olLang === "en" ? "\u{1F464} Names" : "\u{1F464} \u0627\u0633\u0627\u0645\u06CC"), /* @__PURE__ */ React.createElement(Inp, { label: olLang === "en" ? "My Name" : "\u0627\u0633\u0645 \u0645\u0646", placeholder: "\u0645\u0647\u062F\u06CC", value: state.settings && state.settings.myName || "", onChange: (e) => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { myName: e.target.value }) })) }), /* @__PURE__ */ React.createElement(Inp, { label: olLang === "en" ? "Spouse Name" : "\u0627\u0633\u0645 \u0647\u0645\u0633\u0631", placeholder: "\u0644\u06CC\u062F\u0627", value: state.settings && state.settings.spouseName || "", onChange: (e) => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { spouseName: e.target.value }) })) })), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13, marginBottom: 14 } }, "\u{1F310} \u0632\u0628\u0627\u0646 \u0628\u0631\u0646\u0627\u0645\u0647 / App Language"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, [["fa", "\u{1F1E6}\u{1F1EB} \u0641\u0627\u0631\u0633\u06CC / \u062F\u0631\u06CC"], ["en", "\u{1F1EC}\u{1F1E7} English"]].map(([lk, lv]) => /* @__PURE__ */ React.createElement("button", { key: lk, onClick: () => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { lang: lk }) })), style: {
+  )), (state.savings || []).length > 0 && /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.green, fontWeight: 700, fontSize: 13, marginBottom: 10 } }, olLang === "en" ? "\u{1F4DD} Savings History" : "\u{1F4DD} \u062A\u0627\u0631\u06CC\u062E\u0686\u0647 \u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632"), [...state.savings || []].reverse().slice(0, 10).map((item) => /* @__PURE__ */ React.createElement(ItemRow, { key: item.id, icon: "\u{1F49A}", label: item.desc || "\u067E\u0633\u200C\u0627\u0646\u062F\u0627\u0632", sub: `${item.by || "\u0645\u0634\u062A\u0631\u06A9"} \xB7 ${gregorianToJalali(item.date)}`, amount: item.amount, currency: item.currency, amountAFN: item.amountAFN, color: DARK.green, onDelete: () => delItem("savings", item.id) })))), tab === "settings" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.yellow }, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.yellow, fontWeight: 700, fontSize: 13, marginBottom: 10 } }, "\u{1F527} Debug / تست سینک"), /* @__PURE__ */ React.createElement(OLBtn, { full: true, color: DARK.accent, style: { marginBottom: 8 }, onClick: forceSync }, "\u{1F504} دریافت از سرور الان"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub, marginTop: 6 } }, "lastUpdatedAt: ", lastUpdatedAt.current || "null"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub } }, "budgetHistory: ", (state.budgetHistory || []).length, " مورد"), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: DARK.sub } }, "bills: ", (state.bills || []).length, " مورد"), debugInfo && /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: DARK.yellow, marginTop: 8, wordBreak: "break-all", background: "#0a0f1a", borderRadius: 6, padding: 8 } }, debugInfo)), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13, marginBottom: 14 } }, olLang === "en" ? "\u{1F464} Names" : "\u{1F464} \u0627\u0633\u0627\u0645\u06CC"), /* @__PURE__ */ React.createElement(Inp, { label: olLang === "en" ? "My Name" : "\u0627\u0633\u0645 \u0645\u0646", placeholder: "\u0645\u0647\u062F\u06CC", value: state.settings && state.settings.myName || "", onChange: (e) => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { myName: e.target.value }) })) }), /* @__PURE__ */ React.createElement(Inp, { label: olLang === "en" ? "Spouse Name" : "\u0627\u0633\u0645 \u0647\u0645\u0633\u0631", placeholder: "\u0644\u06CC\u062F\u0627", value: state.settings && state.settings.spouseName || "", onChange: (e) => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { spouseName: e.target.value }) })) })), /* @__PURE__ */ React.createElement(Card, null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 13, marginBottom: 14 } }, "\u{1F310} \u0632\u0628\u0627\u0646 \u0628\u0631\u0646\u0627\u0645\u0647 / App Language"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, [["fa", "\u{1F1E6}\u{1F1EB} \u0641\u0627\u0631\u0633\u06CC / \u062F\u0631\u06CC"], ["en", "\u{1F1EC}\u{1F1E7} English"]].map(([lk, lv]) => /* @__PURE__ */ React.createElement("button", { key: lk, onClick: () => update((s) => __spreadProps(__spreadValues({}, s), { settings: __spreadProps(__spreadValues({}, s.settings), { lang: lk }) })), style: {
     flex: 1,
     padding: 10,
     borderRadius: 8,
