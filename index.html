@@ -498,7 +498,7 @@ function OLApp({ currentUser }) {
         }
       } catch (e) {
       }
-    }, 1e4);
+    }, 8e3);
     return () => clearInterval(poll);
   }, []);
   // Presence: write current user's heartbeat every 20s, read others
@@ -534,36 +534,16 @@ function OLApp({ currentUser }) {
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
       try {
-        const ARRAY_KEYS = ["bills", "installments", "insurance", "groceries", "other", "incomes", "savings", "savingGoals", "budgetHistory"];
-        let toSave = ns;
-        try {
-          const { data: remote, updated_at: remoteTs } = await loadRemote();
-          if (remote && remoteTs && remoteTs !== lastUpdatedAt.current) {
-            const merged = __spreadValues({}, ns);
-            for (const key of ARRAY_KEYS) {
-              const localArr = ns[key] || [];
-              const remoteArr = remote[key] || [];
-              const localIds = new Set(localArr.map((i) => i.id));
-              const newItems = remoteArr.filter((i) => !localIds.has(i.id));
-              merged[key] = [...localArr, ...newItems];
-            }
-            toSave = merged;
-            lastUpdatedAt.current = remoteTs;
-            setState((prev) => __spreadValues(__spreadValues({}, prev), merged));
-            lastSaved.current = JSON.stringify(merged);
-          }
-        } catch (e) {
-        }
-        await saveRemote(toSave);
-        lastSaved.current = JSON.stringify(toSave);
+        await saveRemote(ns);
+        lastSaved.current = json;
         setSync("synced");
         setTimeout(() => setSync("idle"), 2e3);
       } catch (e) {
         setSync("error");
         setTimeout(() => setSync("idle"), 4000);
       }
-    }, 1000);
-  }, [state, currentUser]);
+    }, 600);
+  }, []);
   const update = React.useCallback((fn) => {
     setState((prev) => {
       const next = typeof fn === "function" ? fn(prev) : __spreadValues(__spreadValues({}, prev), fn);
