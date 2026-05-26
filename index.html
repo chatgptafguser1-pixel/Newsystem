@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      برنامه‌های من 🗂️
-    </title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; } body { background: #0a0f1a; font-family: Tahoma, "Segoe UI", sans-serif; } input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; } #splash { position: fixed; inset: 0; background: #0a0f1a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 9999; } #splash-icon { font-size: 64px; animation: pulse 1.5s ease-in-out infinite; } @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} } #splash-bar { width: 120px; height: 3px; background: #1e2a3a; border-radius: 3px; overflow: hidden; } #splash-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#4fc3f7,#f0a500); border-radius: 3px; animation: fillbar 3s ease-in-out forwards; } @keyframes fillbar { 0%{width:0%} 60%{width:80%} 100%{width:95%} }
-    </style>
-  </head>
-  <body>
-    <div id="splash">
-      <div id="splash-icon">
-        🗂️
-      </div>
-      <div id="splash-bar">
-        <div id="splash-fill">
-        </div>
-      </div>
-    </div>
-    <div id="root">
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin="" onerror="this.onerror=null;this.src='https://unpkg.com/react@18/umd/react.production.min.js'">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin="" onerror="this.onerror=null;this.src='https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'">
-    </script>
-    <script>
-      window.__loadTimeout=setTimeout(function(){var root=document.getElementById('root');var splash=document.getElementById('splash');if(root&&root.children.length===0){if(splash)splash.style.display='none';root.innerHTML='<div dir="rtl" style="min-height:100vh;background:#0a0f1a;display:flex;align-items:center;justify-content:center;font-family:Tahoma,sans-serif;padding:20px"><div style="background:#111827;border:1px solid #f8717144;border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-weight:700;font-size:18px;margin-bottom:12px">اپ لود نشد</div><div style="color:#94a3b8;font-size:13px;line-height:1.8;margin-bottom:20px">۱. اینترنت رو چک کنید<br>۲. رفرش کنید<br>۳. از VPN استفاده کنید</div><button onclick="location.reload()" style="background:#4fc3f7;border:none;color:#0a0f1a;border-radius:10px;padding:12px 28px;cursor:pointer;font-weight:700;font-size:15px">🔄 رفرش</button></div></div>';}},30000);
-    </script>
-    <script>
-      var __defProp = Object.defineProperty;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>برنامه‌های من 🗂️</title>
+  <style>* { margin: 0; padding: 0; box-sizing: border-box; } body { background: #0a0f1a; font-family: Tahoma, "Segoe UI", sans-serif; } input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; } #splash { position: fixed; inset: 0; background: #0a0f1a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; z-index: 9999; } #splash-icon { font-size: 64px; animation: pulse 1.5s ease-in-out infinite; } @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} } #splash-bar { width: 120px; height: 3px; background: #1e2a3a; border-radius: 3px; overflow: hidden; } #splash-fill { height: 100%; width: 0%; background: linear-gradient(90deg,#4fc3f7,#f0a500); border-radius: 3px; animation: fillbar 3s ease-in-out forwards; } @keyframes fillbar { 0%{width:0%} 60%{width:80%} 100%{width:95%} }</style>
+</head>
+<body>
+  <div id="splash"><div id="splash-icon">🗂️</div><div id="splash-bar"><div id="splash-fill"></div></div></div>
+  <div id="root"></div>
+  <script>
+  (function() {
+    var _mem = {};
+    var _ls = {
+      getItem: function(k) { return _mem.hasOwnProperty(k) ? _mem[k] : null; },
+      setItem: function(k, v) { _mem[k] = String(v); },
+      removeItem: function(k) { delete _mem[k]; },
+      clear: function() { _mem = {}; },
+      key: function(i) { return Object.keys(_mem)[i] || null; },
+      get length() { return Object.keys(_mem).length; }
+    };
+    try { localStorage.setItem('__t__','1'); localStorage.removeItem('__t__'); }
+    catch(e) { try { Object.defineProperty(window,'localStorage',{value:_ls,configurable:true,writable:true}); } catch(e2){ window.localStorage=_ls; } }
+    var _orig = window.fetch;
+    window.fetch = function(url, opts) {
+      var u = String(url||'');
+      if (u.indexOf('supabase.co')!==-1||u.indexOf('limahworker')!==-1||u.indexOf('exchangerate-api')!==-1) {
+        var body = u.indexOf('exchangerate-api')!==-1 ? JSON.stringify({rates:{}}) : JSON.stringify([]);
+        return Promise.resolve(new Response(body,{status:200,headers:{'Content-Type':'application/json'}}));
+      }
+      return _orig ? _orig.apply(window,arguments) : Promise.reject(new Error('no fetch'));
+    };
+    // Global error logger
+    window.onerror = function(msg, src, line, col, err) {
+      var d = document.getElementById('__debug__');
+      if (d) d.innerHTML += '<div style="color:#f87171;font-size:10px;margin:2px 0">' + msg + ' (line ' + line + ')</div>';
+    };
+  })();
+  </script>
+  <div id="__debug__" style="position:fixed;bottom:80px;left:0;right:0;background:#1a0a0a;padding:4px 8px;max-height:80px;overflow:auto;z-index:9999;font-family:monospace;display:none"></div>
+  <script>
+  // Show debug panel if errors occur
+  setTimeout(function(){
+    var d = document.getElementById('__debug__');
+    if (d && d.children.length > 0) d.style.display = 'block';
+  }, 3000);
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js" crossorigin onerror="this.onerror=null;this.src='https://unpkg.com/react@18/umd/react.production.min.js'"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js" crossorigin onerror="this.onerror=null;this.src='https://unpkg.com/react-dom@18/umd/react-dom.production.min.js'"></script>
+  <script>window.__loadTimeout=setTimeout(function(){var root=document.getElementById('root');var splash=document.getElementById('splash');if(root&&root.children.length===0){if(splash)splash.style.display='none';root.innerHTML='<div dir="rtl" style="min-height:100vh;background:#0a0f1a;display:flex;align-items:center;justify-content:center;font-family:Tahoma,sans-serif;padding:20px"><div style="background:#111827;border:1px solid #f8717144;border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center"><div style="font-size:48px;margin-bottom:12px">⚠️</div><div style="color:#f87171;font-weight:700;font-size:18px;margin-bottom:12px">اپ لود نشد</div><div style="color:#94a3b8;font-size:13px;line-height:1.8;margin-bottom:20px">۱. اینترنت رو چک کنید<br>۲. رفرش کنید<br>۳. از VPN استفاده کنید</div><button onclick="location.reload()" style="background:#4fc3f7;border:none;color:#0a0f1a;border-radius:10px;padding:12px 28px;cursor:pointer;font-weight:700;font-size:15px">🔄 رفرش</button></div></div>';}},30000);</script>
+  <script>
+var __defProp = Object.defineProperty;
 var __defProps = Object.defineProperties;
 var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
 var __getOwnPropSymbols = Object.getOwnPropertySymbols;
@@ -156,22 +176,19 @@ const ARRAY_KEYS = ["budgetHistory","bills","installments","insurance","grocerie
 function mergeStates(local, remote) {
   if (!local || Object.keys(local).length === 0) return remote;
   if (!remote || Object.keys(remote).length === 0) return local;
-  // If remote has a reset timestamp newer than local, remote wins completely (full reset)
   if (remote._resetAt && (!local._resetAt || remote._resetAt > local._resetAt)) return remote;
-  // If local has a reset timestamp newer than remote, local wins completely (don't let remote override reset)
   if (local._resetAt && (!remote._resetAt || local._resetAt > remote._resetAt)) return local;
   const merged = Object.assign({}, remote);
+  const deletedIds = Object.assign({}, remote._deletedIds || {}, local._deletedIds || {});
+  merged._deletedIds = deletedIds;
   for (const key of ARRAY_KEYS) {
     const localArr = local[key] || [];
     const remoteArr = remote[key] || [];
-    // If remote array is empty but local isn't, check reset flag
-    // Remote empty = intentional reset, don't restore from local
     if (remoteArr.length === 0) { merged[key] = []; continue; }
     const map = {};
     for (const item of remoteArr) map[item.id] = item;
-    for (const item of localArr) {
-      if (!map[item.id]) map[item.id] = item;
-    }
+    for (const item of localArr) { if (!map[item.id]) map[item.id] = item; }
+    for (const id of Object.keys(deletedIds)) delete map[id];
     merged[key] = Object.values(map).sort((a,b) => (a.date||"") > (b.date||"") ? -1 : 1);
   }
   merged.settings = Object.assign({}, local.settings || {}, remote.settings || {});
@@ -241,30 +258,167 @@ async function checkPw(plain, stored) {
   if (!stored.startsWith("sha256:")) return plain === stored;
   return await hashPw(plain) === stored;
 }
+const T = {
+  fa: {
+    appTitle: "دفتر بازار",
+    appSubtitle: "مدیریت مالی",
+    dashboard: "خلاصه",
+    expenses: "هزینه‌ها",
+    income: "درآمد",
+    savings: "پس‌انداز",
+    settings: "تنظیمات",
+    services: "خدمات",
+    appointments: "نوبت‌ها",
+    notes: "یادداشت‌ها",
+    debt: "بدهی",
+    totalBudget: "بودجه کل",
+    totalDebt: "بدهی کل",
+    recentExpenses: "هزینه‌های اخیر",
+    addBudget: "افزودن بودجه",
+    addExpense: "افزودن هزینه",
+    addIncome: "افزودن درآمد",
+    addDebt: "افزودن بدهی",
+    addService: "افزودن خدمت",
+    addNote: "افزودن یادداشت",
+    addAppointment: "افزودن نوبت",
+    save: "ذخیره",
+    cancel: "انصراف",
+    confirm: "تأیید",
+    login: "ورود",
+    enterPass: "رمز عبور وارد کنید",
+    wrongPass: "❌ رمز اشتباه است!",
+    amount: "مبلغ",
+    date: "تاریخ",
+    desc: "توضیح",
+    afghani: "افغانی",
+    me: "من",
+    spouse: "همسر",
+    markPaid: "پرداخت شد",
+    markDone: "انجام شد",
+    noRecords: "موردی یافت نشد",
+    searchPlaceholder: "جستجو...",
+    totalExpenses: "کل هزینه‌ها",
+    remaining: "مانده",
+    remaining_debt: "مانده بدهی",
+    paidSoFar: "پرداخت شده",
+    partialPay: "پرداخت جزئی",
+    payAmount: "مبلغ پرداخت",
+    debtorName: "نام بدهکار",
+    debtAmount: "مبلغ بدهی",
+    debtType: "نوع بدهی",
+    whoAdded: "توسط",
+    customerName: "نام مشتری",
+    selectService: "انتخاب خدمت",
+    servicePrice: "قیمت خدمت",
+    materialCost: "هزینه مواد",
+    itemName: "نام مورد",
+    itemPlaceholder: "مثلاً: برنج",
+    daily: "روزانه",
+    orType: "یا تایپ کنید",
+    priceCalc: "ماشین حساب قیمت",
+    notifySet: "✓ یادآور تنظیم شد",
+    notifyDenied: "اجازه نوتیفیکیشن داده نشد",
+    overdueAppts: "گذشته",
+    todayAppts: "امروز",
+    futureAppts: "آینده",
+    doneAppts: "انجام شده",
+    appointmentNote: "یادداشت نوبت",
+    time: "زمان",
+    budgetAlertMsg: "بودجه رو به اتمام است!",
+    lang: "fa",
+    msg: "پیام",
+    ok: "باشه",
+  },
+  en: {
+    appTitle: "Bazaar Book",
+    appSubtitle: "Financial Manager",
+    dashboard: "Dashboard",
+    expenses: "Expenses",
+    income: "Income",
+    savings: "Savings",
+    settings: "Settings",
+    services: "Services",
+    appointments: "Appointments",
+    notes: "Notes",
+    debt: "Debt",
+    totalBudget: "Total Budget",
+    totalDebt: "Total Debt",
+    recentExpenses: "Recent Expenses",
+    addBudget: "Add Budget",
+    addExpense: "Add Expense",
+    addIncome: "Add Income",
+    addDebt: "Add Debt",
+    addService: "Add Service",
+    addNote: "Add Note",
+    addAppointment: "Add Appointment",
+    save: "Save",
+    cancel: "Cancel",
+    confirm: "Confirm",
+    login: "Login",
+    enterPass: "Enter password",
+    wrongPass: "❌ Wrong password!",
+    amount: "Amount",
+    date: "Date",
+    desc: "Description",
+    afghani: "Afghani",
+    me: "Me",
+    spouse: "Spouse",
+    markPaid: "Mark Paid",
+    markDone: "Mark Done",
+    noRecords: "No records found",
+    searchPlaceholder: "Search...",
+    totalExpenses: "Total Expenses",
+    remaining: "Remaining",
+    remaining_debt: "Remaining Debt",
+    paidSoFar: "Paid So Far",
+    partialPay: "Partial Pay",
+    payAmount: "Pay Amount",
+    debtorName: "Debtor Name",
+    debtAmount: "Debt Amount",
+    debtType: "Debt Type",
+    whoAdded: "Added by",
+    customerName: "Customer Name",
+    selectService: "Select Service",
+    servicePrice: "Service Price",
+    materialCost: "Material Cost",
+    itemName: "Item Name",
+    itemPlaceholder: "e.g. Rice",
+    daily: "Daily",
+    orType: "or type",
+    priceCalc: "Price Calculator",
+    notifySet: "✓ Reminder set",
+    notifyDenied: "Notification permission denied",
+    overdueAppts: "Overdue",
+    todayAppts: "Today",
+    futureAppts: "Upcoming",
+    doneAppts: "Done",
+    appointmentNote: "Appointment note",
+    time: "Time",
+    budgetAlertMsg: "Budget is running low!",
+    lang: "en",
+    msg: "Message",
+    ok: "OK",
+  }
+};
 const DEFAULT = {
   password: "1234",
+  budget: 0,
   totalBudget: 0,
-  // بودجه کل زندگی (مستقل)
   budgetHistory: [],
-  // تاریخچه افزودن بودجه
+  expenses: [],
   bills: [],
-  // قبض‌ها
   installments: [],
-  // قسط‌ها
   insurance: [],
-  // بیمه
   groceries: [],
-  // خوراکی و وسایل خونه
   other: [],
-  // سایر هزینه‌ها
   incomes: [],
-  // درآمدها
   savings: [],
-  // پس‌انداز
   savingGoals: [],
-  // اهداف پس‌انداز
   debts: [],
-  // بدهی مشترک
+  services: [],
+  appointments: [],
+  notes: [],
+  presence: {},
   settings: { myName: "\u0645\u0647\u062F\u06CC", spouseName: "\u0644\u06CC\u062F\u0627" }
 };
 const DARK = {
@@ -353,6 +507,7 @@ function SyncDot({ status }) {
   if (!label) return null;
   return /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color, display: "flex", alignItems: "center", gap: 4 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: "50%", background: color, display: "inline-block" } }), label);
 }
+var SyncBadge = SyncDot;
 const CAT_BILLS = [
   { id: "electricity", icon: "\u26A1", label: "\u0628\u0631\u0642", en: "Electricity" },
   { id: "water", icon: "\u{1F4A7}", label: "\u0622\u0628", en: "Water" },
@@ -703,7 +858,7 @@ function OLApp({ currentUser }) {
     /* @__PURE__ */ React.createElement("button", { onClick: forceSync, title: "Force sync from server", style: { background: "none", border: "1px solid #4fc3f744", borderRadius: 20, color: "#4fc3f7", fontSize: 11, padding: "3px 10px", cursor: "pointer" } }, "\u{1F504} Sync"), /* @__PURE__ */ React.createElement(SyncDot, { status: sync })
   ),
   /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", marginTop: 6, flexWrap: "wrap" } },
-    && Object.keys(onlineUsers).map((user) =>
+    Object.keys(onlineUsers).length > 0 && Object.keys(onlineUsers).map((user) =>
       /* @__PURE__ */ React.createElement("span", { key: user, style: { display: "flex", alignItems: "center", gap: 4, background: "#4fc3f722", border: "1px solid #4fc3f744", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#4fc3f7", fontWeight: 700 } },
         /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#4fc3f7", display: "inline-block" } }),
         user, " \u{1F44B}"
@@ -711,7 +866,7 @@ function OLApp({ currentUser }) {
     )
   )
 ), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
-     && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
+     Object.keys(onlineUsers).length > 1 && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
       /* @__PURE__ */ React.createElement("span", { style: { fontSize: 22 } }, "\u{1F91D}"),
       /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } },
         /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "Both of you are online!" : "\u0647\u0631 \u062F\u0648\u062A\u0627\u0646 \u0622\u0646\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F! \u{1F4F1}"),
@@ -1240,7 +1395,7 @@ const SERVICE_LIST = [
   "\u0645\u0627\u0633\u06A9 \u0645\u0648",
   "\u0645\u0634 \u0645\u0648"
 ];
-const T = {
+const BB_T = {
   fa: {
     appTitle: "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631",
     appSubtitle: "\u062D\u0633\u0627\u0628\u200C\u0648\u06A9\u062A\u0627\u0628 \u0648 \u0628\u0648\u062F\u062C\u0647",
@@ -1976,8 +2131,8 @@ function SettingsPanel({ state, update, t, lang, showToast, theme }) {
 }
 function BBApp({ currentUser }) {
   var _a;
-  const [state, setState] = React.useState(DEFAULT_STATE);
-  const [loading, setLoading] = React.useState(true);
+  const [state, setState] = React.useState(DEFAULT);
+  const [loading, setLoading] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState("idle");
   const syncTimer = React.useRef(null);
   const lastSaved = React.useRef("{}");
@@ -1999,7 +2154,7 @@ function BBApp({ currentUser }) {
   const [showCalc, setShowCalc] = React.useState(false);
   const theme = state.settings && state.settings.theme || "dark";
   const lang = state.settings && state.settings.lang || "fa";
-  const t = T[lang];
+  const t = BB_T[lang];
   const dir = lang === "fa" ? "rtl" : "ltr";
   const isDark = theme !== "light";
   const myName = state.settings && state.settings.myName || t.me;
@@ -2164,12 +2319,12 @@ function BBApp({ currentUser }) {
     }
   };
   const totalBudget = state.budget;
-  const totalIncomeOnly = state.incomes.reduce((s, i) => s + Number(i.amount), 0);
+  const totalIncomeOnly = (state.incomes || []).reduce((s, i) => s + Number(i.amount), 0);
   const totalServicesRevenue = (state.services || []).reduce((s, sv) => s + Number(sv.price), 0);
   const totalServicesMaterialCost = (state.services || []).reduce((s, sv) => s + Number(sv.materialCost || 0), 0);
   const totalServicesProfit = totalServicesRevenue - totalServicesMaterialCost;
   const totalIncome = totalIncomeOnly;
-  const totalExpense = state.expenses.reduce((s, e) => s + Number(e.amount), 0);
+  const totalExpense = (state.expenses || []).reduce((s, e) => s + Number(e.amount), 0);
   const remaining = totalBudget + totalIncomeOnly + totalServicesProfit - totalExpense;
   const shamsiMonths = lang === "fa" ? ["\u0647\u0645\u0647", "\u062D\u0645\u0644", "\u062B\u0648\u0631", "\u062C\u0648\u0632\u0627", "\u0633\u0631\u0637\u0627\u0646", "\u0627\u0633\u062F", "\u0633\u0646\u0628\u0644\u0647", "\u0645\u06CC\u0632\u0627\u0646", "\u0639\u0642\u0631\u0628", "\u0642\u0648\u0633", "\u062C\u062F\u06CC", "\u062F\u0644\u0648", "\u062D\u0648\u062A"] : ["All", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const inMonth = (dateStr) => {
@@ -2178,12 +2333,12 @@ function BBApp({ currentUser }) {
     const cur = currentShamsi();
     return sh.year === cur.year && String(sh.month) === String(filterMonth);
   };
-  const filteredExpenses = state.expenses.filter(
+  const filteredExpenses = (state.expenses || []).filter(
     (e) => inMonth(e.date) && (searchQ ? (e.name + (e.desc || "")).toLowerCase().includes(searchQ.toLowerCase()) : true)
   );
-  const monthExpense = state.expenses.filter((e) => inMonth(e.date)).reduce((s, e) => s + Number(e.amount), 0);
+  const monthExpense = (state.expenses || []).filter((e) => inMonth(e.date)).reduce((s, e) => s + Number(e.amount), 0);
   const monthServicesProfit = (state.services || []).filter((sv) => inMonth(sv.date)).reduce((s, sv) => s + Number(sv.price) - Number(sv.materialCost || 0), 0);
-  const monthIncome = state.incomes.filter((i) => inMonth(i.date)).reduce((s, i) => s + Number(i.amount), 0);
+  const monthIncome = (state.incomes || []).filter((i) => inMonth(i.date)).reduce((s, i) => s + Number(i.amount), 0);
   const alertThreshold = state.settings && state.settings.budgetAlert;
   const showBudgetAlert = alertThreshold && remaining < alertThreshold;
   const toggleLang = () => {
@@ -2260,7 +2415,7 @@ function BBApp({ currentUser }) {
       return;
     }
     if (window.__goBackToShell) window.__goBackToShell();
-  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }), )), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
+  }, style: { background: "none", border: "none", color: "#f0a500", fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"), /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700, fontSize: 17 } }, "\u{1F4D2} ", t.appTitle)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement(SyncBadge, { status: syncStatus, t }), currentUser && /* @__PURE__ */ React.createElement("span", { style: { display: "flex", alignItems: "center", gap: 5, background: "#f0a50022", border: "1px solid #f0a50066", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#f0a500", fontWeight: 700 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#f0a500", display: "inline-block" } }), currentUser))), showBudgetAlert && /* @__PURE__ */ React.createElement("div", { style: { background: "#c0392b", color: "#fff", textAlign: "center", padding: "8px 16px", fontSize: 13, fontWeight: 700 } }, t.budgetAlertMsg, " \u2014 ", fmt(remaining), " ", t.afghani), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? "#2ea043" : "#c0392b", color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "daily" && /* @__PURE__ */ React.createElement(DailyReport, { state, t, theme, lang, subColor, cardBg, borderColor }), tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6, overflowX: "auto", marginBottom: 12, paddingBottom: 4 } }, shamsiMonths.map((m, i) => /* @__PURE__ */ React.createElement(
     "button",
     {
       key: i,
@@ -2636,214 +2791,130 @@ function saveAppPw(appId, hashed) {
   }
 }
 function AppShell() {
-  const [authed, setAuthed] = React.useState(false);
-  const [activeApp, setActiveApp] = React.useState(null);
+  const [activeApp, setActiveApp] = React.useState(null); // null | "bb" | "ol"
   const [pw, setPw] = React.useState("");
   const [err, setErr] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [currentUser, setCurrentUser] = React.useState(() => {
-    try { return localStorage.getItem("ourlife_current_user") || ""; } catch(e) { return ""; }
-  });
-  // NEW: which app is selected (waiting for password)
-  const [selectedApp, setSelectedApp] = React.useState(null);
-  const [pwOk, setPwOk] = React.useState(false);
-  const [pendingApp, setPendingApp] = React.useState(null);
 
-  const handleBack = React.useCallback(() => {
-    setAuthed(false);
-    setActiveApp(null);
-    setSelectedApp(null);
-    setPw("");
-    setErr("");
-    setLoading(false);
-    setCurrentUser("");
-    setPwOk(false);
-    setPendingApp(null);
-    try { localStorage.removeItem("ourlife_current_user"); } catch(e) {}
+  const handleBack = React.useCallback(function() {
+    setActiveApp(null); setPw(""); setErr(""); setLoading(false);
   }, []);
-  React.useEffect(() => {
+
+  React.useEffect(function() {
     window.__goBackToShell = handleBack;
-    return () => { window.__goBackToShell = null; };
+    return function() { window.__goBackToShell = null; };
   }, [handleBack]);
 
-  const handleSelectApp = (appId) => {
-    setSelectedApp(appId);
-    setPw("");
-    setErr("");
-  };
-
-  const handleLogin = async () => {
-    const appId = selectedApp;
-    if (loading || !pw || !appId) return;
+  const handleLogin = async function() {
+    if (loading || !pw) return;
     setLoading(true);
-    const storedPw = getAppPw(appId);
+    const key = activeApp === "bb" ? "bazaarbook" : "ourlife";
+    const storedPw = getAppPw(key);
     const ok = await checkAppPw(pw, storedPw);
     if (ok) {
-      if (!storedPw.startsWith("sha256:")) {
-        hashAppPw(pw).then((h) => saveAppPw(appId, h));
-      }
-      if (appId === "ourlife") {
-        setAuthed(true);
-        setActiveApp(appId);
-        setSelectedApp(null);
-        setPw("");
-        setErr("");
-        setLoading(false);
-        return;
-      }
-      // bazaarbook goes straight in
-      setAuthed(true);
-      setActiveApp(appId);
-      setSelectedApp(null);
-      setPw("");
-      setErr("");
+      if (!storedPw.startsWith("sha256:")) hashAppPw(pw).then(function(h){ saveAppPw(key, h); });
+      setPw(""); setErr("");
+      setActiveApp(activeApp === "bb" ? "bb_authed" : "ol_authed");
     } else {
-      setErr("\u274C \u0631\u0645\u0632 \u0627\u0634\u062A\u0628\u0627\u0647 \u0627\u0633\u062A!");
+      setErr("\u274C \u0631\u0645\u0632 \u0627\u0634\u062a\u0628\u0627\u0647 \u0627\u0633\u062a!");
     }
     setLoading(false);
   };
 
-  const handleSelectUser = (userName) => {
-    try { localStorage.setItem("ourlife_current_user", userName); } catch(e) {}
-    setCurrentUser(userName);
-    setAuthed(true);
-    setActiveApp(pendingApp);
-    setSelectedApp(null);
-    setPwOk(false);
-    setPendingApp(null);
-  };
+  // Render BBApp
+  if (activeApp === "bb_authed") {
+    return React.createElement(AppErrorBoundary, null,
+      React.createElement(React.Fragment, null,
+        React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } },
+          React.createElement("button", { onClick: handleBack, style: { background: "rgba(30,39,48,0.92)", border: "1px solid #f0a50044", color: "#f0a500", borderRadius: 20, padding: "5px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, "\u2190 \u062e\u0627\u0646\u0647")
+        ),
+        React.createElement(BBApp, { currentUser: "" })
+      )
+    );
+  }
 
+  // Render OLApp
+  if (activeApp === "ol_authed") {
+    return React.createElement(AppErrorBoundary, null,
+      React.createElement(React.Fragment, null,
+        React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } },
+          React.createElement("button", { onClick: handleBack, style: { background: "rgba(30,39,48,0.92)", border: "1px solid #4fc3f744", color: "#4fc3f7", borderRadius: 20, padding: "5px 14px", cursor: "pointer", fontSize: 12, fontWeight: 700 } }, "\u2190 \u062e\u0627\u0646\u0647")
+        ),
+        React.createElement(OLApp, { currentUser: "" })
+      )
+    );
+  }
 
-
-  // Password screen after app selected
-  if (selectedApp && !authed) {
-    const isOL = selectedApp === "ourlife";
-    const accentColor = isOL ? "#4fc3f7" : "#f0a500";
-    const appIcon = isOL ? "\u{1F3E0}" : "\u{1F4D2}";
-    const appName = isOL ? "\u0632\u0646\u062F\u06AF\u06CC \u0645\u0627" : "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631";
-    return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,'Segoe UI',sans-serif" } },
-      /* @__PURE__ */ React.createElement("div", { style: { width: "90%", maxWidth: 320, textAlign: "center" } },
-        /* @__PURE__ */ React.createElement("div", { style: { fontSize: 52, marginBottom: 10 } }, appIcon),
-        /* @__PURE__ */ React.createElement("h2", { style: { color: accentColor, margin: "0 0 4px", fontSize: 20 } }, appName),
-        /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 12, marginBottom: 24 } }, "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F"),
-        /* @__PURE__ */ React.createElement("input", {
+  // Password screen
+  if (activeApp === "bb" || activeApp === "ol") {
+    const isBB = activeApp === "bb";
+    const accent = isBB ? "#f0a500" : "#4fc3f7";
+    const icon = isBB ? "\u{1F4D2}" : "\u{1F3E0}";
+    const title = isBB ? "\u062f\u0641\u062a\u0631 \u0628\u0627\u0632\u0627\u0631" : "\u0632\u0646\u062f\u06af\u06cc \u0645\u0627";
+    return React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,sans-serif" } },
+      React.createElement("div", { style: { width: "90%", maxWidth: 320, textAlign: "center" } },
+        React.createElement("button", { onClick: handleBack, style: { background: "none", border: "none", color: "#64748b", fontSize: 13, cursor: "pointer", marginBottom: 20, display: "block", margin: "0 auto 20px" } }, "\u2190 \u0628\u0631\u06af\u0634\u062a"),
+        React.createElement("div", { style: { fontSize: 52, marginBottom: 10 } }, icon),
+        React.createElement("h2", { style: { color: accent, margin: "0 0 4px", fontSize: 20 } }, title),
+        React.createElement("p", { style: { color: "#64748b", fontSize: 12, marginBottom: 24 } }, "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u0648\u0627\u0631\u062f \u06a9\u0646\u06cc\u062f"),
+        React.createElement("input", {
           type: "password",
           placeholder: "\u{1F512} \u0631\u0645\u0632 \u0639\u0628\u0648\u0631",
           value: pw,
           autoFocus: true,
-          onChange: (e) => { setPw(e.target.value); setErr(""); },
-          onKeyDown: (e) => { if (e.key === "Enter" && pw) handleLogin(); },
-          style: {
-            width: "100%", padding: "12px 16px", borderRadius: 12,
-            border: err ? "1px solid #f87171" : `1px solid ${accentColor}44`,
-            background: "#111827", color: "#e2e8f0", fontSize: 16,
-            outline: "none", textAlign: "center", boxSizing: "border-box",
-            letterSpacing: 4, transition: "border 0.2s", marginBottom: 8
-          }
+          onChange: function(e) { setPw(e.target.value); setErr(""); },
+          onKeyDown: function(e) { if (e.key === "Enter" && pw) handleLogin(); },
+          style: { width: "100%", padding: "12px 16px", borderRadius: 12, border: err ? "1px solid #f87171" : "1px solid " + accent + "44", background: "#111827", color: "#e2e8f0", fontSize: 16, outline: "none", textAlign: "center", boxSizing: "border-box", letterSpacing: 4, marginBottom: 8 }
         }),
-        err && /* @__PURE__ */ React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginBottom: 10 } }, err),
-        /* @__PURE__ */ React.createElement("button", {
+        err ? React.createElement("p", { style: { color: "#f87171", fontSize: 12, marginBottom: 10 } }, err) : null,
+        React.createElement("button", {
           onClick: handleLogin,
           disabled: loading || !pw,
-          style: {
-            width: "100%", padding: "12px", borderRadius: 12,
-            background: !pw ? "#1e2a3a" : accentColor,
-            color: !pw ? "#64748b" : "#0a0f1a",
-            border: "none", cursor: !pw ? "not-allowed" : "pointer",
-            fontWeight: 700, fontSize: 15, transition: "all 0.2s", marginBottom: 12
-          }
-        }, loading ? "\u23F3..." : "\u0648\u0631\u0648\u062F"),
-        /* @__PURE__ */ React.createElement("button", { onClick: () => setSelectedApp(null), style: { background: "none", border: "none", color: "#64748b", cursor: "pointer", fontSize: 12 } }, "\u2190 \u0628\u0631\u06AF\u0634\u062A")
+          style: { width: "100%", padding: "12px", borderRadius: 12, background: !pw ? "#1e2a3a" : accent, color: !pw ? "#64748b" : "#0a0f1a", border: "none", cursor: !pw ? "not-allowed" : "pointer", fontWeight: 700, fontSize: 15 }
+        }, loading ? "\u23f3..." : "\u0648\u0631\u0648\u062f")
       )
     );
   }
-  if (authed && activeApp === "ourlife") {
-    return /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } }, /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: {
-      background: "rgba(30,42,58,0.92)",
-      backdropFilter: "blur(4px)",
-      border: "1px solid #4fc3f744",
-      color: "#4fc3f7",
-      borderRadius: 20,
-      padding: "5px 14px",
-      cursor: "pointer",
-      fontSize: 12,
-      fontWeight: 700
-    } }, "\u2190 Back \xB7 Our Life")), /* @__PURE__ */ React.createElement(OLApp, { currentUser }));
-  }
-  if (authed && activeApp === "bazaarbook") {
-    return /* @__PURE__ */ React.createElement(AppErrorBoundary, null, /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 8, right: 8, zIndex: 9999 } }, /* @__PURE__ */ React.createElement("button", { onClick: handleBack, style: {
-      background: "rgba(30,39,48,0.92)",
-      backdropFilter: "blur(4px)",
-      border: "1px solid #f0a50044",
-      color: "#f0a500",
-      borderRadius: 20,
-      padding: "5px 14px",
-      cursor: "pointer",
-      fontSize: 12,
-      fontWeight: 700
-    } }, "\u2190 Back \xB7 Bazaar Book")), /* @__PURE__ */ React.createElement(BBApp, { currentUser })));
-  }
-  return /* @__PURE__ */ React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "90%", maxWidth: 360, textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 32 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 48, marginBottom: 8 } }, "\u{1F5C2}\uFE0F"), /* @__PURE__ */ React.createElement("h2", { style: { color: "#e2e8f0", margin: "0 0 4px", fontSize: 22 } }, "\u0627\u0646\u062A\u062E\u0627\u0628 \u0628\u0631\u0646\u0627\u0645\u0647"), /* @__PURE__ */ React.createElement("p", { style: { color: "#64748b", fontSize: 13 } }, "\u0628\u0631\u0646\u0627\u0645\u0647 \u0645\u0648\u0631\u062F \u0646\u0638\u0631 \u0631\u0627 \u0627\u0646\u062A\u062E\u0627\u0628 \u06A9\u0646\u06CC\u062F")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 12 } }, /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => handleSelectApp("ourlife"),
-      style: {
-        padding: "16px 20px",
-        borderRadius: 16,
-        border: "2px solid #4fc3f733",
-        background: "#111827",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        outline: "none",
-        transition: "border-color 0.2s, transform 0.1s",
-        textAlign: "right",
-        width: "100%"
+
+  // Home screen - two app cards
+  return React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,sans-serif", padding: 20 } },
+    React.createElement("div", { style: { width: "100%", maxWidth: 340 } },
+      React.createElement("div", { style: { textAlign: "center", marginBottom: 32 } },
+        React.createElement("div", { style: { fontSize: 40, marginBottom: 8 } }, "\u{1F4F1}"),
+        React.createElement("h1", { style: { color: "#e2e8f0", margin: 0, fontSize: 18, fontWeight: 700 } }, "\u0628\u0631\u0646\u0627\u0645\u0647\u200c\u0647\u0627\u06cc \u0645\u0646"),
+      ),
+      // BBApp card
+      React.createElement("button", {
+        onClick: function() { setActiveApp("bb"); setPw(""); setErr(""); },
+        style: { width: "100%", background: "#111827", border: "1px solid #f0a50044", borderRadius: 16, padding: "20px 24px", marginBottom: 14, cursor: "pointer", textAlign: "right", display: "flex", alignItems: "center", gap: 16 }
       },
-      onMouseOver: (e) => { e.currentTarget.style.borderColor = "#4fc3f7"; },
-      onMouseOut: (e) => { e.currentTarget.style.borderColor = "#4fc3f733"; },
-      onMouseDown: (e) => { e.currentTarget.style.transform = "scale(0.98)"; },
-      onMouseUp: (e) => { e.currentTarget.style.transform = "scale(1)"; }
-    },
-    /* @__PURE__ */ React.createElement("span", { style: { fontSize: 38 } }, "\u{1F3E0}"),
-    /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 15 } }, "\u0632\u0646\u062F\u06AF\u06CC \u0645\u0627"), /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, "\u0645\u062F\u06CC\u0631\u06CC\u062A \u0645\u0627\u0644\u06CC \u0632\u0646\u062F\u06AF\u06CC \u062F\u0648\u0646\u0641\u0631\u0647")),
-    /* @__PURE__ */ React.createElement("span", { style: { color: "#4fc3f744", fontSize: 18 } }, "\u2190")
-  ), /* @__PURE__ */ React.createElement(
-    "button",
-    {
-      onClick: () => handleSelectApp("bazaarbook"),
-      style: {
-        padding: "16px 20px",
-        borderRadius: 16,
-        border: "2px solid #f0a50033",
-        background: "#111827",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        gap: 14,
-        outline: "none",
-        transition: "border-color 0.2s, transform 0.1s",
-        textAlign: "right",
-        width: "100%"
+        React.createElement("div", { style: { fontSize: 40 } }, "\u{1F4D2}"),
+        React.createElement("div", null,
+          React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 16 } }, "\u062f\u0641\u062a\u0631 \u0628\u0627\u0632\u0627\u0631"),
+          React.createElement("div", { style: { color: "#64748b", fontSize: 12, marginTop: 4 } }, "\u062d\u0633\u0627\u0628\u200c\u0648\u06a9\u062a\u0627\u0628 \u0648 \u0645\u062f\u06cc\u0631\u06cc\u062a \u0628\u0627\u0632\u0627\u0631")
+        )
+      ),
+      // OLApp card
+      React.createElement("button", {
+        onClick: function() { setActiveApp("ol"); setPw(""); setErr(""); },
+        style: { width: "100%", background: "#111827", border: "1px solid #4fc3f744", borderRadius: 16, padding: "20px 24px", cursor: "pointer", textAlign: "right", display: "flex", alignItems: "center", gap: 16 }
       },
-      onMouseOver: (e) => { e.currentTarget.style.borderColor = "#f0a500"; },
-      onMouseOut: (e) => { e.currentTarget.style.borderColor = "#f0a50033"; },
-      onMouseDown: (e) => { e.currentTarget.style.transform = "scale(0.98)"; },
-      onMouseUp: (e) => { e.currentTarget.style.transform = "scale(1)"; }
-    },
-    /* @__PURE__ */ React.createElement("span", { style: { fontSize: 38 } }, "\u{1F4D2}"),
-    /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 15 } }, "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631"), /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, "\u062D\u0633\u0627\u0628\u200C\u0648\u06A9\u062A\u0627\u0628 \u0648 \u0628\u0648\u062F\u062C\u0647 \u0628\u0627\u0632\u0627\u0631")),
-    /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a50044", fontSize: 18 } }, "\u2190")
-  )), /* @__PURE__ */ React.createElement("p", { style: { color: "#334155", fontSize: 11, marginTop: 28 } }, "\u0647\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u062C\u062F\u0627\u06AF\u0627\u0646\u0647 \u062F\u0627\u0631\u062F \xB7 v2.3")));
+        React.createElement("div", { style: { fontSize: 40 } }, "\u{1F3E0}"),
+        React.createElement("div", null,
+          React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 16 } }, "\u0632\u0646\u062f\u06af\u06cc \u0645\u0627"),
+          React.createElement("div", { style: { color: "#64748b", fontSize: 12, marginTop: 4 } }, "\u0647\u0632\u06cc\u0646\u0647\u200c\u0647\u0627 \u0648 \u0628\u0631\u0646\u0627\u0645\u0647\u200c\u0631\u06cc\u0632\u06cc \u0645\u0634\u062a\u0631\u06a9")
+        )
+      )
+    )
+  );
 }
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(AppShell));
 const splash = document.getElementById("splash");
 if (splash) splash.style.display = "none";
-    </script>
-    <script>
-      document.addEventListener("DOMContentLoaded",function(){var c=setInterval(function(){if(document.getElementById("root")&&document.getElementById("root").children.length>0){clearInterval(c);if(window.__loadTimeout)clearTimeout(window.__loadTimeout);var s=document.getElementById("splash");if(s)s.style.display="none";}},100);setTimeout(function(){var s=document.getElementById("splash");if(s)s.style.display="none";},5000);});
-    </script>
-  </body>
+
+  </script>
+  <script>document.addEventListener("DOMContentLoaded",function(){var c=setInterval(function(){if(document.getElementById("root")&&document.getElementById("root").children.length>0){clearInterval(c);if(window.__loadTimeout)clearTimeout(window.__loadTimeout);var s=document.getElementById("splash");if(s)s.style.display="none";}},100);setTimeout(function(){var s=document.getElementById("splash");if(s)s.style.display="none";},5000);});</script>
+</body>
 </html>
