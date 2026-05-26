@@ -856,13 +856,13 @@ function BBApp({ currentUser }) {
   const subColor = isDark ? "#8892a4" : "#aaa";
   const borderColor = isDark ? "#2a3441" : "#e8e8e8";
   React.useEffect(() => {
-    const local = loadLocalData();
+    const local = loadLocal();
     if (local && Object.keys(local).length > 0) {
       setState((prev) => __spreadValues(__spreadValues({}, prev), local));
       lastSaved.current = JSON.stringify(local);
       setLoading(false);
     }
-    loadData().then(({ data, updated_at }) => {
+    loadRemote().then(({ data, updated_at }) => {
       if (data && Object.keys(data).length > 0) {
         setState((prev) => __spreadValues(__spreadValues({}, prev), data));
         lastSaved.current = JSON.stringify(data);
@@ -878,7 +878,7 @@ function BBApp({ currentUser }) {
   React.useEffect(() => {
     const poll = setInterval(async () => {
       try {
-        const { data, updated_at } = await loadData();
+        const { data, updated_at } = await loadRemote();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
           setState((prev) => __spreadValues(__spreadValues({}, prev), data));
@@ -927,7 +927,7 @@ function BBApp({ currentUser }) {
     setSyncStatus("syncing");
     clearTimeout(syncTimer.current);
     syncTimer.current = setTimeout(async () => {
-      await saveData(newState);
+      await saveRemote(newState);
       lastSaved.current = json;
       setSyncStatus("synced");
       setTimeout(() => setSyncStatus("idle"), 2e3);
