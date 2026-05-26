@@ -688,27 +688,9 @@ function OLApp({ currentUser }) {
     ),
     /* @__PURE__ */ React.createElement("button", { onClick: forceSync, title: "Force sync from server", style: { background: "none", border: "1px solid #4fc3f744", borderRadius: 20, color: "#4fc3f7", fontSize: 11, padding: "3px 10px", cursor: "pointer" } }, "\u{1F504} Sync"), /* @__PURE__ */ React.createElement(SyncDot, { status: sync })
   ),
-  /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", marginTop: 6, flexWrap: "wrap" } },
-    currentUser && /* @__PURE__ */ React.createElement("span", { style: { display: "flex", alignItems: "center", gap: 5, background: "#34d39922", border: "1px solid #34d39966", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#34d399", fontWeight: 700 } },
-      /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#34d399", display: "inline-block" } }),
-      currentUser
-    ),
-    Boolean(Object.keys(onlineUsers).length) && Object.keys(onlineUsers).map((user) =>
-      /* @__PURE__ */ React.createElement("span", { key: user, style: { display: "flex", alignItems: "center", gap: 4, background: "#4fc3f722", border: "1px solid #4fc3f744", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#4fc3f7", fontWeight: 700 } },
-        /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: "50%", background: "#4fc3f7", display: "inline-block" } }),
-        user, " \u{1F44B}"
-      )
-    )
-  )
-), toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
-    Boolean(Object.keys(onlineUsers).length) && /* @__PURE__ */ React.createElement("div", { style: { background: "linear-gradient(90deg,#4fc3f722,#34d39922)", border: "1px solid #4fc3f744", borderRadius: 12, padding: "10px 16px", margin: "12px 14px 0", display: "flex", alignItems: "center", gap: 10 } },
-      /* @__PURE__ */ React.createElement("span", { style: { fontSize: 22 } }, "\u{1F91D}"),
-      /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } },
-        /* @__PURE__ */ React.createElement("div", { style: { color: "#4fc3f7", fontWeight: 700, fontSize: 13 } }, olLang === "en" ? "Both of you are online!" : "\u0647\u0631 \u062F\u0648\u062A\u0627\u0646 \u0622\u0646\u0644\u0627\u06CC\u0646 \u0647\u0633\u062A\u06CC\u062F! \u{1F4F1}"),
-        /* @__PURE__ */ React.createElement("div", { style: { color: "#64748b", fontSize: 11, marginTop: 2 } }, currentUser, " + ", Object.keys(onlineUsers).join(", "), olLang === "en" ? " are using the app together" : " \u0647\u0645\u0632\u0645\u0627\u0646 \u062F\u0631 \u0628\u0631\u0646\u0627\u0645\u0647 \u0647\u0633\u062A\u06CC\u062F")
-      ),
-      /* @__PURE__ */ React.createElement("span", { style: { width: 10, height: 10, borderRadius: "50%", background: "#34d399", display: "inline-block", boxShadow: "0 0 8px #34d399" } })
-    ), /* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.accent, style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, textTransform: "uppercase", marginBottom: 4 } }, olLang === "en" ? "Total Budget" : "\u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 28 } }, fmt(totalBudget)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN" : "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addBudget"), style: {
+),
+toast && /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", top: 64, left: "50%", transform: "translateX(-50%)", background: toast.ok ? DARK.green : DARK.red, color: "#fff", padding: "10px 22px", borderRadius: 30, fontSize: 13, zIndex: 3e3, boxShadow: "0 4px 20px rgba(0,0,0,0.5)", whiteSpace: "nowrap" } }, toast.msg),
+/* @__PURE__ */ React.createElement("div", { style: { padding: "14px 14px 0", maxWidth: 580, margin: "0 auto" } }, tab === "dashboard" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement(Card, { accent: DARK.accent, style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11, textTransform: "uppercase", marginBottom: 4 } }, olLang === "en" ? "Total Budget" : "\u0628\u0648\u062F\u062C\u0647 \u06A9\u0644 \u0632\u0646\u062F\u06AF\u06CC"), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.accent, fontWeight: 700, fontSize: 28 } }, fmt(totalBudget)), /* @__PURE__ */ React.createElement("div", { style: { color: DARK.sub, fontSize: 11 } }, olLang === "en" ? "AFN" : "\u0627\u0641\u063A\u0627\u0646\u06CC")), /* @__PURE__ */ React.createElement("button", { onClick: () => setModal("addBudget"), style: {
     background: DARK.accent + "22",
     border: `1px dashed ${DARK.accent}66`,
     color: DARK.accent,
