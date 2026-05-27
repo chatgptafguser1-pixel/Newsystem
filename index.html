@@ -22,15 +22,7 @@
     };
     try { localStorage.setItem('__t__','1'); localStorage.removeItem('__t__'); }
     catch(e) { try { Object.defineProperty(window,'localStorage',{value:_ls,configurable:true,writable:true}); } catch(e2){ window.localStorage=_ls; } }
-    var _orig = window.fetch;
-    window.fetch = function(url, opts) {
-      var u = String(url||'');
-      if (u.indexOf('supabase.co')!==-1||u.indexOf('limahworker')!==-1||u.indexOf('exchangerate-api')!==-1) {
-        var body = u.indexOf('exchangerate-api')!==-1 ? JSON.stringify({rates:{}}) : JSON.stringify([]);
-        return Promise.resolve(new Response(body,{status:200,headers:{'Content-Type':'application/json'}}));
-      }
-      return _orig ? _orig.apply(window,arguments) : Promise.reject(new Error('no fetch'));
-    };
+
     // Global error logger
     window.onerror = function(msg, src, line, col, err) {
       var d = document.getElementById('__debug__');
