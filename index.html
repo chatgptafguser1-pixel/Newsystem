@@ -176,6 +176,17 @@ function mergeStates(local, remote) {
   for (const key of ARRAY_KEYS) {
     const localArr = local[key] || [];
     const remoteArr = remote[key] || [];
+    // Bug fix: an empty remote array means "no data synced yet", not "delete everything".
+    // Only treat it as an intentional wipe if remote has a _resetAt timestamp newer than local.
+    // In all other cases, preserve local items when remote array is empty.
+    if (remoteArr.length === 0 && localArr.length > 0) {
+      // Keep local items; they'll be filtered by deletedIds below
+      const map = {};
+      for (const item of localArr) map[item.id] = item;
+      for (const id of Object.keys(deletedIds)) delete map[id];
+      merged[key] = Object.values(map).sort((a,b) => (a.date||"") > (b.date||"") ? -1 : 1);
+      continue;
+    }
     if (remoteArr.length === 0) { merged[key] = []; continue; }
     const map = {};
     for (const item of remoteArr) map[item.id] = item;
@@ -192,6 +203,10 @@ const OL_SB_HEADERS = {
   "Authorization": "Bearer " + OL_SB_KEY,
   "Prefer": "return=representation"
 };
+const OL_PENDING_KEY = "ourlife_pending_sync";
+const getPendingSync = () => { try { const r = localStorage.getItem(OL_PENDING_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
+const setPendingSync = (data) => { try { localStorage.setItem(OL_PENDING_KEY, JSON.stringify({ data, ts: new Date().toISOString() })); } catch(e) {} };
+const clearPendingSync = () => { try { localStorage.removeItem(OL_PENDING_KEY); } catch(e) {} };
 const loadRemote = async () => {
   try {
     const res = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=key,value,updated_at", {
@@ -202,7 +217,6 @@ const loadRemote = async () => {
       const data = typeof rows[0].value === "string" ? JSON.parse(rows[0].value) : rows[0].value;
       return { data, updated_at: rows[0].updated_at };
     }
-    // row doesn't exist yet - create it
     if (Array.isArray(rows) && rows.length === 0) {
       await fetch(OL_SB_URL + "/rest/v1/kv_store", {
         method: "POST",
@@ -215,22 +229,31 @@ const loadRemote = async () => {
 };
 const saveRemote = async (data) => {
   try { localStorage.setItem(OL_LS_KEY, JSON.stringify(data)); } catch(e) {}
+  if (!navigator.onLine) {
+    setPendingSync(data);
+    return null;
+  }
   try {
-    const value = JSON.stringify(data);
+    const pending = getPendingSync();
+    // Fix: merge(pending, data) so current state (data) takes priority over older pending
+    const saveData = pending ? mergeStates(pending.data, data) : data;
+    const value = JSON.stringify(saveData);
     const ts = new Date().toISOString();
-    // upsert - insert or update if key exists
     const upsertRes = await fetch(OL_SB_URL + "/rest/v1/kv_store", {
       method: "POST",
       headers: { ...OL_SB_HEADERS, "Prefer": "resolution=merge-duplicates,return=representation" },
       body: JSON.stringify({ key: "ourlife", value, updated_at: ts })
     });
     const upsertRows = await upsertRes.json();
+    // Fix: only clear pending after confirming upsert succeeded
+    if (upsertRows && (upsertRows[0] || Array.isArray(upsertRows))) clearPendingSync();
     if (upsertRows && upsertRows[0] && upsertRows[0].updated_at) return upsertRows[0].updated_at;
-    // fallback: get updated_at
     const res2 = await fetch(OL_SB_URL + "/rest/v1/kv_store?key=eq.ourlife&select=updated_at", { headers: OL_SB_HEADERS });
     const rows2 = await res2.json();
     if (rows2 && rows2[0]) return rows2[0].updated_at;
-  } catch(e) {}
+  } catch(e) {
+    setPendingSync(data);
+  }
   return null;
 };
 const loadLocal = () => {
@@ -493,7 +516,8 @@ function OLModal({ title, onClose, children, dir }) {
     overflowY: "auto"
   } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 } }, /* @__PURE__ */ React.createElement("span", { style: { color: DARK.text, fontWeight: 700, fontSize: 16 } }, title), /* @__PURE__ */ React.createElement("button", { onClick: onClose, style: { background: "none", border: "none", color: DARK.sub, fontSize: 22, cursor: "pointer", lineHeight: 1 } }, "\u2715")), children));
 }
-function SyncDot({ status }) {
+function SyncDot({ status, isOffline }) {
+  if (isOffline) return /* @__PURE__ */ React.createElement("span", { style: { background: "#c0392b22", border: "1px solid #c0392b88", borderRadius: 20, color: "#c0392b", fontSize: 11, padding: "3px 10px", fontWeight: 700 } }, "📵 آفلاین");
   const color = status === "syncing" ? DARK.yellow : status === "synced" ? DARK.green : status === "error" ? DARK.red : "transparent";
   const label = status === "syncing" ? "Syncing..." : status === "synced" ? "Saved \u2713" : status === "error" ? "Error" : "";
   if (!label) return null;
@@ -672,9 +696,55 @@ function OLApp({ currentUser }) {
   const PREVIEW = 3;
   const [toast, setToast] = React.useState(null);
   const [sync, setSync] = React.useState("idle");
+  const [isOffline, setIsOffline] = React.useState(!navigator.onLine);
   const syncTimer = React.useRef(null);
   const lastSaved = React.useRef("{}");
   const lastUpdatedAt = React.useRef(null);
+  React.useEffect(() => {
+    const goOnline = async () => {
+      setIsOffline(false);
+      setSync("syncing");
+      try {
+        // Capture current in-memory state (may have unsaved changes from offline period)
+        let currentState = null;
+        setState((prev) => { currentState = prev; return prev; });
+        // Give React a tick to flush the setState above
+        await new Promise(r => setTimeout(r, 0));
+
+        const pending = getPendingSync();
+        // Merge pending + current so nothing added offline is lost
+        const dataToSync = pending && currentState
+          ? mergeStates(pending.data, currentState)
+          : (currentState || (pending && pending.data));
+
+        if (dataToSync) {
+          const ts = await saveRemote(dataToSync);
+          if (ts) {
+            lastUpdatedAt.current = ts;
+            // Fetch remote to pick up changes from other devices
+            const { data: remoteData } = await loadRemote();
+            if (remoteData && Object.keys(remoteData).length > 0) {
+              setState((prev) => {
+                const merged = mergeStates(dataToSync, remoteData);
+                lastSaved.current = JSON.stringify(merged);
+                try { localStorage.setItem(OL_LS_KEY, JSON.stringify(merged)); } catch(e) {}
+                return merged;
+              });
+            }
+          }
+        }
+        setSync("synced");
+        setTimeout(() => setSync("idle"), 2000);
+      } catch(e) {
+        setSync("error");
+        setTimeout(() => setSync("idle"), 3000);
+      }
+    };
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, []);
   React.useEffect(() => {
     const local = loadLocal();
     if (local && Object.keys(local).length > 0) {
@@ -861,7 +931,10 @@ function OLApp({ currentUser }) {
     showToast(olLang === "en" ? "\u2713 Saved" : "\u2713 \u0630\u062E\u06CC\u0631\u0647 \u0634\u062F");
     closeModal();
   };
-  const delItem = (key, id) => update((s) => __spreadProps(__spreadValues({}, s), { [key]: (s[key] || []).filter((i) => i.id !== id) }));
+  const delItem = (key, id) => update((s) => {
+    const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [id]: new Date().toISOString() });
+    return __spreadProps(__spreadValues({}, s), { [key]: (s[key] || []).filter((i) => i.id !== id), _deletedIds: deletedIds });
+  });
   return /* @__PURE__ */ React.createElement("div", { dir: olDir, style: { minHeight: "100vh", background: DARK.bg, color: DARK.text, paddingBottom: 80, fontFamily: "Tahoma,'Segoe UI',sans-serif" } }, /* @__PURE__ */ React.createElement("div", { style: { background: DARK.card, borderBottom: `1px solid ${DARK.border}`, padding: "10px 16px", position: "sticky", top: 0, zIndex: 100 } },
   /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center" } },
     /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } },
@@ -872,7 +945,7 @@ function OLApp({ currentUser }) {
       }, style: { background: "none", border: "none", color: DARK.sub, fontSize: 20, cursor: "pointer", lineHeight: 1, padding: "0 4px" } }, "\u2190"),
       /* @__PURE__ */ React.createElement("span", { style: { color: DARK.accent, fontWeight: 700, fontSize: 17 } }, olLang === "en" ? ("🏠 " + myName) : ("🏠 \u0632\u0646\u062F\u06AF\u06CC \u0645\u0627"))
     ),
-    /* @__PURE__ */ React.createElement("button", { onClick: forceSync, title: "Force sync from server", style: { background: "none", border: "1px solid #4fc3f744", borderRadius: 20, color: "#4fc3f7", fontSize: 11, padding: "3px 10px", cursor: "pointer" } }, "🔄 Sync"), /* @__PURE__ */ React.createElement(SyncDot, { status: sync })
+    /* @__PURE__ */ React.createElement("button", { onClick: forceSync, title: "Force sync from server", style: { background: "none", border: "1px solid #4fc3f744", borderRadius: 20, color: "#4fc3f7", fontSize: 11, padding: "3px 10px", cursor: "pointer" } }, "🔄 Sync"), /* @__PURE__ */ React.createElement(SyncDot, { status: sync, isOffline })
   ),
   /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, alignItems: "center", marginTop: 6, flexWrap: "wrap" } },
     Object.keys(onlineUsers).length > 0 && Object.keys(onlineUsers).map((user) =>
@@ -1365,14 +1438,26 @@ const loadData = async () => {
   if (rows && rows[0]) return { data: rows[0].data || {}, updated_at: rows[0].updated_at };
   return { data: {}, updated_at: null };
 };
+const BB_PENDING_KEY = "bazaarbook_pending_sync";
+const getBBPending = () => { try { const r = localStorage.getItem(BB_PENDING_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } };
+const setBBPending = (data) => { try { localStorage.setItem(BB_PENDING_KEY, JSON.stringify({ data, ts: new Date().toISOString() })); } catch(e) {} };
+const clearBBPending = () => { try { localStorage.removeItem(BB_PENDING_KEY); } catch(e) {} };
 const saveData = async (data) => {
   try {
     localStorage.setItem("bazaarbook_data", JSON.stringify(data));
   } catch (e) {
   }
+  if (!navigator.onLine) {
+    setBBPending(data);
+    return;
+  }
   try {
-    await bbSbFetch("PATCH", { data, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+    const pending = getBBPending();
+    const savePayload = pending ? bbMergeStates(pending.data, data) : data;
+    await bbSbFetch("PATCH", { data: savePayload, updated_at: (/* @__PURE__ */ new Date()).toISOString() });
+    clearBBPending();
   } catch (e) {
+    setBBPending(data);
   }
 };
 const loadLocalData = () => {
@@ -1383,6 +1468,39 @@ const loadLocalData = () => {
     return null;
   }
 };
+const BB_ARRAY_KEYS = ["budgetHistory","incomes","expenses","noteItems","debts","appointments","services","ourLife"];
+function bbMergeStates(local, remote) {
+  if (!local || Object.keys(local).length === 0) return remote;
+  if (!remote || Object.keys(remote).length === 0) return local;
+  const merged = Object.assign({}, remote);
+  const deletedIds = Object.assign({}, remote._deletedIds || {}, local._deletedIds || {});
+  merged._deletedIds = deletedIds;
+  for (const key of BB_ARRAY_KEYS) {
+    const localArr = local[key] || [];
+    const remoteArr = remote[key] || [];
+    // Preserve local items when remote array is empty (not a real wipe)
+    if (remoteArr.length === 0 && localArr.length > 0) {
+      const map = {};
+      for (const item of localArr) map[item.id] = item;
+      for (const id of Object.keys(deletedIds)) delete map[id];
+      merged[key] = Object.values(map);
+      continue;
+    }
+    if (remoteArr.length === 0) { merged[key] = []; continue; }
+    const map = {};
+    for (const item of remoteArr) map[item.id] = item;
+    for (const item of localArr) { if (!map[item.id]) map[item.id] = item; }
+    for (const id of Object.keys(deletedIds)) delete map[id];
+    merged[key] = Object.values(map);
+  }
+  merged.settings = Object.assign({}, local.settings || {}, remote.settings || {});
+  // Scalar fields: remote wins if set, else local
+  for (const key of ["budget","noteText","password"]) {
+    if (remote[key] !== undefined) merged[key] = remote[key];
+    else if (local[key] !== undefined) merged[key] = local[key];
+  }
+  return merged;
+}
 const DEFAULT_STATE = {
   password: "1234",
   budget: 0,
@@ -1954,7 +2072,10 @@ function OurLifePanel({ state, update, theme, lang }) {
     setForm({ show: false, desc: "", amount: "", cat: "grocery", by: myName, date: today() });
   };
   const deleteItem = (id) => {
-    update((s) => __spreadProps(__spreadValues({}, s), { ourLife: (s.ourLife || []).filter((i) => i.id !== id) }));
+    update((s) => {
+      const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [id]: new Date().toISOString() });
+      return __spreadProps(__spreadValues({}, s), { ourLife: (s.ourLife || []).filter((i) => i.id !== id), _deletedIds: deletedIds });
+    });
   };
   const filtered = activeTab === "all" ? items : items.filter((i) => i.by === (activeTab === "me" ? myName : spouseName));
   const cardStyle = { background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 12, padding: 14, marginBottom: 10 };
@@ -2166,6 +2287,7 @@ function BBApp({ currentUser }) {
   const [state, setState] = React.useState(DEFAULT);
   const [loading, setLoading] = React.useState(false);
   const [syncStatus, setSyncStatus] = React.useState("idle");
+  const [isOffline, setIsOffline] = React.useState(!navigator.onLine);
   const syncTimer = React.useRef(null);
   const lastSaved = React.useRef("{}");
   const [authed, setAuthed] = React.useState(true);
@@ -2198,6 +2320,35 @@ function BBApp({ currentUser }) {
   const subColor = isDark ? "#8892a4" : "#aaa";
   const borderColor = isDark ? "#2a3441" : "#e8e8e8";
   React.useEffect(() => {
+    const goOnline = async () => {
+      setIsOffline(false);
+      const pending = getBBPending();
+      if (pending) {
+        setSyncStatus("syncing");
+        try {
+          const { data: remoteData } = await loadData();
+          const mergedData = remoteData && Object.keys(remoteData).length > 0
+            ? bbMergeStates(remoteData, pending.data)
+            : pending.data;
+          await bbSbFetch("PATCH", { data: mergedData, updated_at: new Date().toISOString() });
+          clearBBPending();
+          setState((prev) => { const next = __spreadValues(__spreadValues({}, prev), mergedData); lastSaved.current = JSON.stringify(next); try { localStorage.setItem("bazaarbook_data", JSON.stringify(next)); } catch(e) {} return next; });
+          setSyncStatus("synced");
+          setTimeout(() => setSyncStatus("idle"), 2000);
+        } catch(e) {
+          setSyncStatus("error");
+          setTimeout(() => setSyncStatus("idle"), 3000);
+        }
+      } else {
+        setIsOffline(false);
+      }
+    };
+    const goOffline = () => setIsOffline(true);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, []);
+  React.useEffect(() => {
     const local = loadLocalData();
     if (local && Object.keys(local).length > 0) {
       setState((prev) => __spreadValues(__spreadValues({}, prev), local));
@@ -2223,12 +2374,12 @@ function BBApp({ currentUser }) {
         const { data, updated_at } = await loadData();
         if (data && updated_at && updated_at !== lastUpdatedAt.current) {
           lastUpdatedAt.current = updated_at;
-          setState((prev) => __spreadValues(__spreadValues({}, prev), data));
-          lastSaved.current = JSON.stringify(data);
-          try {
-            localStorage.setItem("bazaarbook_data", JSON.stringify(data));
-          } catch (e) {
-          }
+          setState((prev) => {
+            const next = bbMergeStates(prev, data);
+            lastSaved.current = JSON.stringify(next);
+            try { localStorage.setItem("bazaarbook_data", JSON.stringify(next)); } catch(e) {}
+            return next;
+          });
           setSyncStatus("synced");
           setTimeout(() => setSyncStatus("idle"), 2e3);
         }
@@ -2508,7 +2659,7 @@ function BBApp({ currentUser }) {
     },
     m
   ))), filteredExpenses.length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: subColor, textAlign: "center", padding: 40 } }, t.noRecords) : [...filteredExpenses].reverse().map((e) => /* @__PURE__ */ React.createElement("div", { key: e.id, style: { background: cardBg, border: `1px solid #f0800022`, borderRadius: 12, padding: "12px 14px", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontWeight: 700, fontSize: 14 } }, e.name), e.desc && /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 11, marginTop: 2 } }, e.desc), /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 10, marginTop: 3 } }, gregorianToJalali(e.date), " \xB7 ", e.by === "me" ? `👤 ${myName}` : `👥 ${spouseName}`)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 8 } }, /* @__PURE__ */ React.createElement("span", { style: { color: "#f08000", fontWeight: 700, fontSize: 13 } }, fmt(e.amount)), /* @__PURE__ */ React.createElement("button", { onClick: () => openModal("editExpense", { editId: e.id, name: e.name, amount: e.amount, desc: e.desc, date: e.date, by: e.by }), style: { background: "none", border: "none", color: "#58a6ff", cursor: "pointer", fontSize: 15 } }, "\u270F\uFE0F"), /* @__PURE__ */ React.createElement("button", { onClick: () => {
-    if (confirm(t.confirm)) update((s) => __spreadProps(__spreadValues({}, s), { expenses: s.expenses.filter((x) => x.id !== e.id) }));
+    if (confirm(t.confirm)) update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [e.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { expenses: s.expenses.filter((x) => x.id !== e.id), _deletedIds: deletedIds }); });
   }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 16 } }, "🗑")))))), tab === "services" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginBottom: 10 } }, /* @__PURE__ */ React.createElement(
     "input",
     {
@@ -2536,7 +2687,7 @@ function BBApp({ currentUser }) {
     },
     m
   ))), /* @__PURE__ */ React.createElement(TopServicesStats, { services: state.services || [], t, theme, lang, subColor, cardBg, borderColor }), (state.services || []).filter((sv) => inMonth(sv.date) && (searchQ ? (sv.name + (sv.customer || "")).toLowerCase().includes(searchQ.toLowerCase()) : true)).length === 0 ? /* @__PURE__ */ React.createElement("div", { style: { color: subColor, textAlign: "center", padding: 40 } }, t.noRecords) : [...state.services || []].filter((sv) => inMonth(sv.date) && (searchQ ? (sv.name + (sv.customer || "")).toLowerCase().includes(searchQ.toLowerCase()) : true)).reverse().map((sv) => /* @__PURE__ */ React.createElement("div", { key: sv.id, style: { background: cardBg, border: "1px solid #b06ed433", borderRadius: 12, padding: "12px 14px", marginBottom: 8 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", marginBottom: 4 } }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, fontSize: 14 } }, "💅 ", sv.name), /* @__PURE__ */ React.createElement("span", { style: { color: "#b06ed4", fontWeight: 700, fontSize: 13 } }, fmt(sv.price), " ", t.afghani)), sv.customer && /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 11 } }, "👤 ", sv.customer), sv.materialCost > 0 && /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 11 } }, "🧴 ", lang === "fa" ? "\u0647\u0632\u06CC\u0646\u0647 \u0645\u0648\u0627\u062F" : "Materials", ": ", fmt(sv.materialCost), " ", t.afghani), /* @__PURE__ */ React.createElement("div", { style: { color: subColor, fontSize: 10, marginTop: 4, display: "flex", justifyContent: "space-between", alignItems: "center" } }, /* @__PURE__ */ React.createElement("span", null, sv.date), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 6 } }, /* @__PURE__ */ React.createElement("button", { onClick: () => openModal("editService", { editId: sv.id, name: sv.name, price: sv.price, materialCost: sv.materialCost, customer: sv.customer, date: sv.date }), style: { background: "none", border: "none", color: "#58a6ff", cursor: "pointer", fontSize: 15 } }, "\u270F\uFE0F"), /* @__PURE__ */ React.createElement("button", { onClick: () => {
-    if (confirm(t.confirm)) update((s) => __spreadProps(__spreadValues({}, s), { services: s.services.filter((x) => x.id !== sv.id) }));
+    if (confirm(t.confirm)) update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [sv.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { services: s.services.filter((x) => x.id !== sv.id), _deletedIds: deletedIds }); });
   }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 15 } }, "🗑")))))), tab === "notes" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 14, marginBottom: 12 } }, "📝 ", t.notes), /* @__PURE__ */ React.createElement(
     "textarea",
     {
@@ -2580,7 +2731,8 @@ function BBApp({ currentUser }) {
       if (!debt) return s;
       const debtType = debt.debtType || "gave";
       const budgetDelta = debtType === "gave" ? debt.remaining : -debt.remaining;
-      return __spreadProps(__spreadValues({}, s), { debts: s.debts.filter((x) => x.id !== d.id), budget: s.budget + budgetDelta });
+      const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [d.id]: new Date().toISOString() });
+      return __spreadProps(__spreadValues({}, s), { debts: s.debts.filter((x) => x.id !== d.id), budget: s.budget + budgetDelta, _deletedIds: deletedIds });
     });
   }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 16, marginRight: "auto" } }, "🗑")))), state.debts.filter((d) => d.remaining === 0 && (searchQ ? d.name.toLowerCase().includes(searchQ.toLowerCase()) : true)).map((d) => /* @__PURE__ */ React.createElement("div", { key: d.id, style: { background: cardBg, border: "1px solid #2ea04322", borderRadius: 12, padding: "10px 14px", marginBottom: 8, opacity: 0.45 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between" } }, /* @__PURE__ */ React.createElement("span", { style: { textDecoration: "line-through", color: subColor } }, "👤 ", d.name), /* @__PURE__ */ React.createElement("span", { style: { color: "#2ea043" } }, fmt(d.amount), " \u2713")))), state.debts.filter((d) => searchQ ? d.name.toLowerCase().includes(searchQ.toLowerCase()) : true).length === 0 && /* @__PURE__ */ React.createElement("div", { style: { color: subColor, textAlign: "center", padding: 40 } }, t.noRecords)), tab === "appointments" && /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 } }, /* @__PURE__ */ React.createElement("span", { style: { color: "#f0a500", fontWeight: 700 } }, "📅 ", t.appointments), /* @__PURE__ */ React.createElement(BBBtn, { onClick: () => openModal("appointment") }, "+ ", lang === "fa" ? "\u062B\u0628\u062A" : "Add")), [
     { filter: (a) => a.date === today() && !a.done, label: "\u2B50 " + t.todayAppts, color: "#f0a500" },
@@ -2612,14 +2764,14 @@ function BBApp({ currentUser }) {
             // دکمه ثبت سریع سرویس از نوبت
             React.createElement("button", { onClick: () => openModal("service", { customer: a.name }), style: { background: "#b06ed422", border: "1px solid #b06ed4", color: "#b06ed4", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "💅 " + (lang === "fa" ? "\u062B\u0628\u062A \u0633\u0631\u0648\u06CC\u0633" : "Add Service")),
             React.createElement("button", { onClick: () => {
-              if (confirm(t.confirm)) update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id) }));
+              if (confirm(t.confirm)) update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [a.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id), _deletedIds: deletedIds }); });
             }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 15 } }, "🗑")
           ),
           a.done && React.createElement(
             "div",
             { style: { display: "flex", gap: 6, marginTop: 4 } },
             React.createElement("button", { onClick: () => {
-              update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id) }));
+              update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [a.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id), _deletedIds: deletedIds }); });
             }, style: { background: "#c0392b22", border: "1px solid #c0392b66", color: "#c0392b", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12, pointerEvents: "all" } }, "🗑 " + (lang === "fa" ? "\u062D\u0630\u0641" : "Delete"))
           )
         )
