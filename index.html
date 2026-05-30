@@ -283,7 +283,7 @@ async function checkPw(plain, stored) {
 }
 const T = {
   fa: {
-    appTitle: "دفتر بازار",
+    appTitle: "لیما",
     appSubtitle: "مدیریت مالی",
     dashboard: "خلاصه",
     expenses: "هزینه‌ها",
@@ -353,7 +353,7 @@ const T = {
     ok: "باشه",
   },
   en: {
-    appTitle: "Bazaar Book",
+    appTitle: "Limah",
     appSubtitle: "Financial Manager",
     dashboard: "Dashboard",
     expenses: "Expenses",
@@ -1564,7 +1564,7 @@ const SERVICE_LIST = [
 ];
 const BB_T = {
   fa: {
-    appTitle: "\u062F\u0641\u062A\u0631 \u0628\u0627\u0632\u0627\u0631",
+    appTitle: "لیما",
     appSubtitle: "\u062D\u0633\u0627\u0628\u200C\u0648\u06A9\u062A\u0627\u0628 \u0648 \u0628\u0648\u062F\u062C\u0647",
     password: "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631",
     enterPass: "\u0631\u0645\u0632 \u0639\u0628\u0648\u0631 \u0631\u0627 \u0648\u0627\u0631\u062F \u06A9\u0646\u06CC\u062F",
@@ -1671,7 +1671,7 @@ const BB_T = {
     notesSaved: "\u06CC\u0627\u062F\u062F\u0627\u0634\u062A \u0630\u062E\u06CC\u0631\u0647 \u0634\u062F \u2713"
   },
   en: {
-    appTitle: "Bazaar Book",
+    appTitle: "Limah",
     appSubtitle: "Budget & Accounts",
     password: "Password",
     enterPass: "Enter password",
@@ -3057,7 +3057,7 @@ function AppShell() {
     const isBB = activeApp === "bb";
     const accent = isBB ? "#f0a500" : "#4fc3f7";
     const icon = isBB ? "📒" : "🏠";
-    const title = isBB ? "\u062f\u0641\u062a\u0631 \u0628\u0627\u0632\u0627\u0631" : "\u0632\u0646\u062f\u06af\u06cc \u0645\u0627";
+    const title = isBB ? "لیما" : "\u0632\u0646\u062f\u06af\u06cc \u0645\u0627";
     return React.createElement("div", { dir: "rtl", style: { minHeight: "100vh", background: "#0a0f1a", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Tahoma,sans-serif" } },
       React.createElement("div", { style: { width: "90%", maxWidth: 320, textAlign: "center" } },
         React.createElement("button", { onClick: handleBack, style: { background: "none", border: "none", color: "#64748b", fontSize: 13, cursor: "pointer", marginBottom: 20, display: "block", margin: "0 auto 20px" } }, "\u2190 \u0628\u0631\u06af\u0634\u062a"),
@@ -3097,7 +3097,7 @@ function AppShell() {
       },
         React.createElement("div", { style: { fontSize: 40 } }, "📒"),
         React.createElement("div", null,
-          React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 16 } }, "\u062f\u0641\u062a\u0631 \u0628\u0627\u0632\u0627\u0631"),
+          React.createElement("div", { style: { color: "#f0a500", fontWeight: 700, fontSize: 16 } }, "لیما"),
           React.createElement("div", { style: { color: "#64748b", fontSize: 12, marginTop: 4 } }, "\u062d\u0633\u0627\u0628\u200c\u0648\u06a9\u062a\u0627\u0628 \u0648 \u0645\u062f\u06cc\u0631\u06cc\u062a \u0628\u0627\u0632\u0627\u0631")
         )
       ),
