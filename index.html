@@ -2779,22 +2779,14 @@ function BBApp({ currentUser }) {
           ),
           a.phone && React.createElement("div", { style: { color: subColor, fontSize: 11, marginBottom: 2 } }, "📱 " + a.phone),
           a.note && React.createElement("div", { style: { color: subColor, fontSize: 11, marginBottom: 6 } }, a.note),
-          !a.done && React.createElement(
+          React.createElement(
             "div",
-            { style: { display: "flex", gap: 6, flexWrap: "wrap" } },
-            React.createElement("button", { onClick: () => update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.map((x) => x.id === a.id ? __spreadProps(__spreadValues({}, x), { done: true }) : x) })), style: { background: "#2ea04322", border: "1px solid #2ea043", color: "#2ea043", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "\u2713 " + t.markDone),
-            // دکمه ثبت سریع سرویس از نوبت
-            React.createElement("button", { onClick: () => openModal("service", { customer: a.name }), style: { background: "#b06ed422", border: "1px solid #b06ed4", color: "#b06ed4", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "💅 " + (lang === "fa" ? "\u062B\u0628\u062A \u0633\u0631\u0648\u06CC\u0633" : "Add Service")),
+            { style: { display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4 } },
+            !a.done && React.createElement("button", { onClick: () => update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.map((x) => x.id === a.id ? __spreadProps(__spreadValues({}, x), { done: true }) : x) })), style: { background: "#2ea04322", border: "1px solid #2ea043", color: "#2ea043", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "\u2713 " + t.markDone),
+            React.createElement("button", { onClick: () => openModal("appointment_edit", a), style: { background: "#58a6ff22", border: "1px solid #58a6ff", color: "#58a6ff", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "\u270F " + (lang === "fa" ? "\u0648\u06CC\u0631\u0627\u06CC\u0634" : "Edit")),
             React.createElement("button", { onClick: () => {
               if (confirm(t.confirm)) update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [a.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id), _deletedIds: deletedIds }); });
-            }, style: { background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 15 } }, "🗑")
-          ),
-          a.done && React.createElement(
-            "div",
-            { style: { display: "flex", gap: 6, marginTop: 4 } },
-            React.createElement("button", { onClick: () => {
-              update((s) => { const deletedIds = __spreadProps(__spreadValues({}, s._deletedIds || {}), { [a.id]: new Date().toISOString() }); return __spreadProps(__spreadValues({}, s), { appointments: s.appointments.filter((x) => x.id !== a.id), _deletedIds: deletedIds }); });
-            }, style: { background: "#c0392b22", border: "1px solid #c0392b66", color: "#c0392b", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12, pointerEvents: "all" } }, "🗑 " + (lang === "fa" ? "\u062D\u0630\u0641" : "Delete"))
+            }, style: { background: "#c0392b22", border: "1px solid #c0392b66", color: "#c0392b", borderRadius: 6, padding: "4px 10px", cursor: "pointer", fontSize: 12 } }, "\uD83D\uDDD1 " + (lang === "fa" ? "\u062D\u0630\u0641" : "Delete"))
           )
         )
       )
@@ -2970,6 +2962,39 @@ function BBApp({ currentUser }) {
           const apptName = form.name || form.phone;
           update((s) => __spreadProps(__spreadValues({}, s), { appointments: [...s.appointments, { id: uid(), name: apptName, phone: form.phone || "", count: Number(form.count) || 1, date: form.date, time: form.time, note: form.note, done: false, updatedAt: new Date().toISOString() }] }));
           if (form.time) scheduleNotification(apptName, form.date, form.time);
+          showToast("✓");
+          closeModal();
+        } }, t.save),
+        React.createElement(BBBtn, { full: true, variant: "ghost", onClick: closeModal }, t.cancel)
+      )
+    );
+  })()), modal === "appointment_edit" && /* @__PURE__ */ React.createElement(BBModal, { title: "✏ " + (lang === "fa" ? "ویرایش نوبت" : "Edit Appointment"), onClose: closeModal, theme }, (() => {
+    const ae2 = form._apptTouched ? { id: !form.name && !form.phone, date: !form.date, time: !form.time } : {};
+    const eStyle2 = { outline: "1.5px solid #f87171", borderRadius: 8 };
+    const eMsg2 = (m) => React.createElement("div", { style: { color: "#f87171", fontSize: 11, marginTop: -4, marginBottom: 6, paddingRight: 4 } }, "⚠ " + m);
+    return React.createElement(React.Fragment, null,
+      React.createElement("div", { style: ae2.id ? eStyle2 : {} },
+        React.createElement(Input, { theme, label: lang === "fa" ? "نام مشتری *" : "Customer name *", placeholder: lang === "fa" ? "نام مشتری..." : "Customer name...", value: form.name || "", onChange: (e) => fv("name", e.target.value) }),
+        React.createElement(Input, { theme, label: lang === "fa" ? "شماره تلفن (در صورت نداشتن نام)" : "Phone (if no name)", placeholder: lang === "fa" ? "شماره تلفن..." : "Phone...", value: form.phone || "", onChange: (e) => fv("phone", e.target.value) })
+      ),
+      ae2.id && eMsg2(lang === "fa" ? "حداقل نام یا شماره وارد کنید" : "Enter name or phone"),
+      React.createElement(Input, { theme, label: lang === "fa" ? "تعداد نفر" : "Number of people", type: "number", placeholder: "1", value: form.count ?? "1", onChange: (e) => fv("count", e.target.value) }),
+      React.createElement("div", { style: ae2.date ? eStyle2 : {} },
+        React.createElement(Input, { theme, label: t.date + " *", type: "date", value: form.date, onChange: (e) => fv("date", e.target.value) })
+      ),
+      ae2.date && eMsg2(lang === "fa" ? "تاریخ الزامی است" : "Date is required"),
+      React.createElement("div", { style: ae2.time ? eStyle2 : {} },
+        React.createElement(Input, { theme, label: t.time + " *", type: "time", value: form.time || "", onChange: (e) => fv("time", e.target.value) })
+      ),
+      ae2.time && eMsg2(lang === "fa" ? "ساعت الزامی است" : "Time is required"),
+      React.createElement(Input, { theme, label: t.appointmentNote, placeholder: "توضیح...", value: form.note || "", onChange: (e) => fv("note", e.target.value) }),
+      React.createElement("div", { style: { display: "flex", gap: 8 } },
+        React.createElement(BBBtn, { full: true, onClick: () => {
+          fv("_apptTouched", true);
+          if (!form.name && !form.phone) return;
+          if (!form.date || !form.time) return;
+          const apptName = form.name || form.phone;
+          update((s) => __spreadProps(__spreadValues({}, s), { appointments: s.appointments.map((x) => x.id === form.id ? __spreadProps(__spreadValues({}, x), { name: apptName, phone: form.phone || "", count: Number(form.count) || 1, date: form.date, time: form.time, note: form.note, updatedAt: new Date().toISOString() }) : x) }));
           showToast("✓");
           closeModal();
         } }, t.save),
