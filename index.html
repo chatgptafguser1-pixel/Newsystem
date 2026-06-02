@@ -2761,7 +2761,7 @@ function BBApp({ currentUser }) {
     { filter: (a) => a.date < today() && !a.done, label: "\u26A0 " + t.overdueAppts, color: "#c0392b" },
     { filter: (a) => a.done, label: "\u2705 " + t.doneAppts, color: "#2ea043" }
   ].map(({ filter, label, color }) => {
-    const items = state.appointments.filter(filter).sort((a, b) => a.date.localeCompare(b.date));
+    const items = state.appointments.filter(filter).sort((a, b) => { const da = (a.date || "") + "T" + (a.time || "00:00"); const db = (b.date || "") + "T" + (b.time || "00:00"); return da.localeCompare(db); });
     if (!items.length) return null;
     return React.createElement(
       "div",
