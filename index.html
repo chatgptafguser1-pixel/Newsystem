@@ -2774,9 +2774,10 @@ function BBApp({ currentUser }) {
           React.createElement(
             "div",
             { style: { display: "flex", justifyContent: "space-between", marginBottom: a.note ? 4 : 0 } },
-            React.createElement("span", { style: { fontWeight: 700, fontSize: 14, textDecoration: a.done ? "line-through" : "none" } }, "👤 " + a.name),
+            React.createElement("span", { style: { fontWeight: 700, fontSize: 14, textDecoration: a.done ? "line-through" : "none" } }, "👤 " + a.name + (a.count && a.count > 1 ? " (" + a.count + " نفر)" : "")),
             React.createElement("span", { style: { color: "#58a6ff", fontSize: 12 } }, a.date + (a.time ? " \xB7 " + a.time : ""))
           ),
+          a.phone && React.createElement("div", { style: { color: subColor, fontSize: 11, marginBottom: 2 } }, "📱 " + a.phone),
           a.note && React.createElement("div", { style: { color: subColor, fontSize: 11, marginBottom: 6 } }, a.note),
           !a.done && React.createElement(
             "div",
@@ -2941,13 +2942,41 @@ function BBApp({ currentUser }) {
     update((s) => __spreadProps(__spreadValues({}, s), { services: s.services.map((x) => x.id === form.editId ? __spreadProps(__spreadValues({}, x), { name: form.name, price: Number(form.price), materialCost: Number(form.materialCost || 0), customer: form.customer, date: form.date, updatedAt: new Date().toISOString() }) : x) }));
     showToast("\u2713");
     closeModal();
-  }, style: { background: "#b06ed4" } }, t.save), /* @__PURE__ */ React.createElement(BBBtn, { full: true, variant: "ghost", onClick: closeModal }, t.cancel))), modal === "appointment" && /* @__PURE__ */ React.createElement(BBModal, { title: "📅 " + t.addAppointment, onClose: closeModal, theme }, /* @__PURE__ */ React.createElement(Input, { theme, label: t.customerName, placeholder: "\u0646\u0627\u0645 \u0645\u0634\u062A\u0631\u06CC...", value: form.name || "", onChange: (e) => fv("name", e.target.value) }), /* @__PURE__ */ React.createElement(Input, { theme, label: t.date, type: "date", value: form.date, onChange: (e) => fv("date", e.target.value) }), /* @__PURE__ */ React.createElement(Input, { theme, label: t.time, type: "time", value: form.time || "", onChange: (e) => fv("time", e.target.value) }), /* @__PURE__ */ React.createElement(Input, { theme, label: t.appointmentNote, placeholder: "\u062A\u0648\u0636\u06CC\u062D...", value: form.note || "", onChange: (e) => fv("note", e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8 } }, /* @__PURE__ */ React.createElement(BBBtn, { full: true, onClick: () => {
-    if (!form.name) return;
-    update((s) => __spreadProps(__spreadValues({}, s), { appointments: [...s.appointments, { id: uid(), name: form.name, date: form.date, time: form.time, note: form.note, done: false, updatedAt: new Date().toISOString() }] }));
-    if (form.time) scheduleNotification(form.name, form.date, form.time);
-    showToast("\u2713");
-    closeModal();
-  } }, t.save), /* @__PURE__ */ React.createElement(BBBtn, { full: true, variant: "ghost", onClick: closeModal }, t.cancel))), showCalc && /* @__PURE__ */ React.createElement(PriceCalculator, { onClose: () => setShowCalc(false), theme, t, lang, subColor }));
+  }, style: { background: "#b06ed4" } }, t.save), /* @__PURE__ */ React.createElement(BBBtn, { full: true, variant: "ghost", onClick: closeModal }, t.cancel))), modal === "appointment" && /* @__PURE__ */ React.createElement(BBModal, { title: "📅 " + t.addAppointment, onClose: closeModal, theme }, (() => {
+    const ae = form._apptTouched ? { id: !form.name && !form.phone, date: !form.date, time: !form.time } : {};
+    const eStyle = { outline: "1.5px solid #f87171", borderRadius: 8 };
+    const eMsg = (m) => React.createElement("div", { style: { color: "#f87171", fontSize: 11, marginTop: -4, marginBottom: 6, paddingRight: 4 } }, "⚠ " + m);
+    return React.createElement(React.Fragment, null,
+      React.createElement("div", { style: ae.id ? eStyle : {} },
+        React.createElement(Input, { theme, label: lang === "fa" ? "نام مشتری *" : "Customer name *", placeholder: lang === "fa" ? "نام مشتری..." : "Customer name...", value: form.name || "", onChange: (e) => fv("name", e.target.value) }),
+        React.createElement(Input, { theme, label: lang === "fa" ? "شماره تلفن (در صورت نداشتن نام)" : "Phone (if no name)", placeholder: lang === "fa" ? "شماره تلفن..." : "Phone...", value: form.phone || "", onChange: (e) => fv("phone", e.target.value) })
+      ),
+      ae.id && eMsg(lang === "fa" ? "حداقل نام یا شماره وارد کنید" : "Enter name or phone"),
+      React.createElement(Input, { theme, label: lang === "fa" ? "تعداد نفر" : "Number of people", type: "number", placeholder: "1", value: form.count ?? "1", onChange: (e) => fv("count", e.target.value) }),
+      React.createElement("div", { style: ae.date ? eStyle : {} },
+        React.createElement(Input, { theme, label: t.date + " *", type: "date", value: form.date, onChange: (e) => fv("date", e.target.value) })
+      ),
+      ae.date && eMsg(lang === "fa" ? "تاریخ الزامی است" : "Date is required"),
+      React.createElement("div", { style: ae.time ? eStyle : {} },
+        React.createElement(Input, { theme, label: t.time + " *", type: "time", value: form.time || "", onChange: (e) => fv("time", e.target.value) })
+      ),
+      ae.time && eMsg(lang === "fa" ? "ساعت الزامی است" : "Time is required"),
+      React.createElement(Input, { theme, label: t.appointmentNote, placeholder: "توضیح...", value: form.note || "", onChange: (e) => fv("note", e.target.value) }),
+      React.createElement("div", { style: { display: "flex", gap: 8 } },
+        React.createElement(BBBtn, { full: true, onClick: () => {
+          fv("_apptTouched", true);
+          if (!form.name && !form.phone) return;
+          if (!form.date || !form.time) return;
+          const apptName = form.name || form.phone;
+          update((s) => __spreadProps(__spreadValues({}, s), { appointments: [...s.appointments, { id: uid(), name: apptName, phone: form.phone || "", count: Number(form.count) || 1, date: form.date, time: form.time, note: form.note, done: false, updatedAt: new Date().toISOString() }] }));
+          if (form.time) scheduleNotification(apptName, form.date, form.time);
+          showToast("✓");
+          closeModal();
+        } }, t.save),
+        React.createElement(BBBtn, { full: true, variant: "ghost", onClick: closeModal }, t.cancel)
+      )
+    );
+  })()), showCalc && /* @__PURE__ */ React.createElement(PriceCalculator, { onClose: () => setShowCalc(false), theme, t, lang, subColor }));
 }
 class AppErrorBoundary extends React.Component {
   constructor(props) {
